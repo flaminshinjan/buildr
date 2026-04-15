@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { label: "Overview", href: "/dashboard", icon: "\u25A6" },
   { label: "Marketplace", href: "/dashboard/marketplace", icon: "\u2302" },
   { label: "Orchestrate", href: "/dashboard/orchestrate", icon: "\u25B6" },
+  { label: "History", href: "/dashboard/history", icon: "\u29D6" },
   { label: "Register Agent", href: "/dashboard/register", icon: "+" },
 ];
 
@@ -45,7 +46,7 @@ export function Sidebar() {
             textDecoration: "none",
           }}
         >
-          AgentStore
+          buildr
         </Link>
       </div>
 

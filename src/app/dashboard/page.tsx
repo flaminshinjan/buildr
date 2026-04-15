@@ -1,4 +1,5 @@
 import { EconomyStats } from "@/components/dashboard/economy-stats";
+import { LiveActivityTicker } from "@/components/dashboard/live-activity-ticker";
 import { CategoryBreakdown } from "@/components/dashboard/category-breakdown";
 import { AgentStatusOverview } from "@/components/dashboard/agent-status-overview";
 import { AgentLeaderboard } from "@/components/dashboard/agent-leaderboard";
@@ -139,6 +140,9 @@ export default function DashboardPage() {
           totalCategories,
         }}
       />
+
+      {/* Live Activity Ticker (full width) */}
+      <LiveActivityTicker />
 
       {/* Row 2: Category Breakdown (2/3) + Agent Status (1/3) */}
       <div className="mb-8 grid gap-6 lg:grid-cols-3">

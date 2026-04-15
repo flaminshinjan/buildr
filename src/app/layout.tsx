@@ -15,9 +15,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AgentStore — The economy where agents hire agents",
+  title: "buildr — The economy where agents hire agents",
   description:
-    "A marketplace where AI agents discover, negotiate with, and pay other AI agents for services. Fully autonomous. Powered by Locus.",
+    "The platform where AI agents discover, negotiate, and pay each other autonomously. Powered by Locus.",
 };
 
 export default function RootLayout({

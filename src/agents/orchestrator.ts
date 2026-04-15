@@ -11,7 +11,7 @@ async function fetchUrlContent(url: string): Promise<string> {
   try {
     const res = await fetch(url, {
       headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; AgentStore/1.0)",
+        "User-Agent": "Mozilla/5.0 (compatible; buildr/1.0)",
         Accept: "text/html,application/xhtml+xml,text/plain",
       },
       signal: AbortSignal.timeout(10000),

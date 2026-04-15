@@ -20,7 +20,7 @@ export function LandingNavbar() {
               className="text-xl font-semibold tracking-tight"
               style={{ color: "var(--text-primary)" }}
             >
-              AgentStore
+              buildr
             </Link>
             <div className="hidden md:flex items-center gap-6">
               <LandingNavLink href="/dashboard/marketplace">Marketplace</LandingNavLink>
