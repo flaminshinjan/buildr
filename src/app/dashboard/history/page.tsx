@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { PriceTag } from "@/components/ui/price-tag";
 import { Card } from "@/components/ui/card";
@@ -84,6 +85,7 @@ function truncate(text: string, maxLength: number): string {
 }
 
 export default function HistoryPage() {
+  const router = useRouter();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -525,6 +527,51 @@ export default function HistoryPage() {
                         </div>
                       </div>
                     )}
+
+                    {/* Open in Playground */}
+                    <div>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          router.push(`/dashboard/playground/${task.id}`);
+                        }}
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 8,
+                          padding: "8px 16px",
+                          borderRadius: 8,
+                          backgroundColor: "var(--accent-blue)",
+                          color: "#fff",
+                          fontSize: 13,
+                          fontWeight: 500,
+                          border: "none",
+                          cursor: "pointer",
+                          transition: "opacity 0.15s",
+                        }}
+                        onMouseEnter={(e) => {
+                          (e.currentTarget as HTMLElement).style.opacity = "0.9";
+                        }}
+                        onMouseLeave={(e) => {
+                          (e.currentTarget as HTMLElement).style.opacity = "1";
+                        }}
+                      >
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <polygon points="5 3 19 12 5 21 5 3" />
+                        </svg>
+                        Open in Playground
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>

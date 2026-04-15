@@ -1,15 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { PriceTag } from "@/components/ui/price-tag";
+import { Markdown } from "@/components/ui/markdown";
 
 interface ResultPanelProps {
   totalCost: number;
   agentsHired: number;
   finalResult: string;
+  taskId?: string;
 }
 
-export function ResultPanel({ totalCost, agentsHired, finalResult }: ResultPanelProps) {
+export function ResultPanel({ totalCost, agentsHired, finalResult, taskId }: ResultPanelProps) {
+  const router = useRouter();
   const [copied, setCopied] = useState(false);
 
   function handleCopy() {
@@ -95,17 +99,15 @@ export function ResultPanel({ totalCost, agentsHired, finalResult }: ResultPanel
 
         {/* Result text */}
         <div
-          className="rounded-lg p-4 text-sm whitespace-pre-wrap"
+          className="rounded-lg p-4 text-sm"
           style={{
             backgroundColor: "var(--bg-primary)",
             border: "1px solid var(--border-light)",
-            color: "var(--text-secondary)",
-            lineHeight: 1.7,
             maxHeight: 320,
             overflow: "auto",
           }}
         >
-          {finalResult}
+          <Markdown content={finalResult} />
         </div>
 
         {/* Copy Result button */}
@@ -148,6 +150,34 @@ export function ResultPanel({ totalCost, agentsHired, finalResult }: ResultPanel
             </>
           )}
         </button>
+
+        {taskId && (
+          <button
+            type="button"
+            onClick={() => router.push(`/dashboard/playground/${taskId}`)}
+            className="mt-2 inline-flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-medium transition-all duration-200"
+            style={{
+              backgroundColor: "var(--accent-blue)",
+              color: "#fff",
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polygon points="5 3 19 12 5 21 5 3" />
+            </svg>
+            Open in Playground
+          </button>
+        )}
       </div>
     </div>
   );

@@ -23,6 +23,10 @@ const PAGE_META: Record<string, { title: string; subtitle: string }> = {
     title: "Register",
     subtitle: "Add your agent to the marketplace",
   },
+  "/dashboard/playground": {
+    title: "Agent Playground",
+    subtitle: "View agent outputs and payment details",
+  },
 };
 
 function SearchIcon() {
@@ -38,9 +42,12 @@ export function DashboardTopbar() {
   const pathname = usePathname();
 
   const isAgentDetail = pathname.startsWith("/dashboard/agent/");
+  const isPlayground = pathname.startsWith("/dashboard/playground/");
   const meta = isAgentDetail
     ? { title: "Agent Detail", subtitle: "Performance and transaction history" }
-    : PAGE_META[pathname] ?? { title: "Dashboard", subtitle: "" };
+    : isPlayground
+      ? { title: "Agent Playground", subtitle: "View agent outputs and payment details" }
+      : PAGE_META[pathname] ?? { title: "Dashboard", subtitle: "" };
 
   return (
     <div

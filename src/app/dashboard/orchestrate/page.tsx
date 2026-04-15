@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { TaskInput } from "@/components/orchestration/task-input";
 import { ExecutionTimeline } from "@/components/orchestration/execution-timeline";
 import { CostEstimator } from "@/components/orchestration/cost-estimator";
@@ -59,10 +60,12 @@ const TASK_TEMPLATES: TaskTemplate[] = [
 ];
 
 export default function OrchestratePage() {
+  const router = useRouter();
   const [taskInput, setTaskInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [events, setEvents] = useState<OrchestrationEvent[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [completedTaskId, setCompletedTaskId] = useState<string | null>(null);
 
   const handleTemplateClick = useCallback(
     (template: TaskTemplate) => {
@@ -125,6 +128,14 @@ export default function OrchestratePage() {
       ]);
     } finally {
       setLoading(false);
+      // Check for completion event and extract task_id
+      setEvents((prev) => {
+        const completionEvent = prev.find((e) => e.type === "completion");
+        if (completionEvent?.data?.task_id) {
+          setCompletedTaskId(completionEvent.data.task_id as string);
+        }
+        return prev;
+      });
     }
   }
 
@@ -250,6 +261,36 @@ export default function OrchestratePage() {
               )}
             </div>
             <ExecutionTimeline events={events} />
+
+            {completedTaskId && (
+              <button
+                type="button"
+                onClick={() =>
+                  router.push(`/dashboard/playground/${completedTaskId}`)
+                }
+                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold transition-all duration-200"
+                style={{
+                  backgroundColor: "var(--accent-green)",
+                  color: "#fff",
+                  border: "none",
+                  cursor: "pointer",
+                }}
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polygon points="5 3 19 12 5 21 5 3" />
+                </svg>
+                View in Playground
+              </button>
+            )}
           </div>
 
           <div className="mt-4 text-center">
