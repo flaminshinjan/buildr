@@ -10,6 +10,31 @@ import { Agent } from "@/lib/schema";
 
 export const dynamic = "force-dynamic";
 
+function SectionDivider({ label }: { label: string }) {
+  return (
+    <div className="mb-6 mt-2">
+      <div
+        className="mb-4"
+        style={{
+          height: 1,
+          backgroundColor: "var(--border-light)",
+        }}
+      />
+      <p
+        style={{
+          fontSize: 11,
+          fontWeight: 600,
+          letterSpacing: "0.08em",
+          textTransform: "uppercase",
+          color: "var(--text-tertiary)",
+        }}
+      >
+        {label}
+      </p>
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const db = getDb();
 
@@ -130,22 +155,29 @@ export default function DashboardPage() {
   return (
     <>
       {/* Row 1: 6 Stat Cards */}
-      <EconomyStats
-        stats={{
-          totalAgents,
-          onlineAgents,
-          totalTransacted,
-          tasksCompleted,
-          avgCost,
-          totalCategories,
-        }}
-      />
+      <div className="mb-10">
+        <EconomyStats
+          stats={{
+            totalAgents,
+            onlineAgents,
+            totalTransacted,
+            tasksCompleted,
+            avgCost,
+            totalCategories,
+          }}
+        />
+      </div>
 
       {/* Live Activity Ticker (full width) */}
-      <LiveActivityTicker />
+      <div className="mb-10">
+        <LiveActivityTicker />
+      </div>
 
-      {/* Row 2: Category Breakdown (2/3) + Agent Status (1/3) */}
-      <div className="mb-8 grid gap-6 lg:grid-cols-3">
+      {/* Analytics section */}
+      <SectionDivider label="Analytics" />
+
+      {/* Category Breakdown (2/3) + Agent Status (1/3) */}
+      <div className="mb-10 grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <CategoryBreakdown categories={categories} />
         </div>
@@ -154,13 +186,19 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Row 3: Top Earners (1/2) + Recent Transactions (1/2) */}
-      <div className="mb-8 grid gap-6 lg:grid-cols-2">
+      {/* Activity section */}
+      <SectionDivider label="Activity" />
+
+      {/* Top Earners (1/2) + Recent Transactions (1/2) */}
+      <div className="mb-10 grid gap-6 lg:grid-cols-2">
         <AgentLeaderboard agents={topAgents} />
         <TransactionFeed transactions={transactions} />
       </div>
 
-      {/* Row 4: Recent Tasks (full width) */}
+      {/* History section */}
+      <SectionDivider label="History" />
+
+      {/* Recent Tasks (full width) */}
       <RecentTasks tasks={taskRows} />
     </>
   );

@@ -108,6 +108,12 @@ body {
   animation: pulse 2s ease-in-out infinite;
 }
 
+@keyframes pulse-border {
+  0% { border-color: var(--border-light); }
+  30% { border-color: var(--accent-blue); box-shadow: 0 0 0 2px var(--accent-blue-light); }
+  100% { border-color: var(--accent-blue); box-shadow: none; }
+}
+
 ::-webkit-scrollbar {
   width: 6px;
 }

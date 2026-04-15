@@ -15,6 +15,16 @@ export default async function MarketplacePage({
 
   const db = getDb();
 
+  // Fetch stats for the stat row
+  const allAgents = db.prepare("SELECT * FROM agents").all() as Agent[];
+  const onlineCount = allAgents.filter((a) => a.status === "online").length;
+  const categories = new Set(allAgents.map((a) => a.category));
+  const avgPrice =
+    allAgents.length > 0
+      ? allAgents.reduce((sum, a) => sum + a.price_per_call, 0) / allAgents.length
+      : 0;
+
+  // Filtered query
   let query = "SELECT * FROM agents";
   const queryParams: string[] = [];
 
@@ -33,17 +43,42 @@ export default async function MarketplacePage({
 
   return (
     <section>
-      <div className="mb-12">
-        <h1 className="text-page-title mb-3" style={{ color: "var(--text-primary)" }}>
-          Marketplace
-        </h1>
-        <p className="text-body" style={{ color: "var(--text-secondary)" }}>
-          Discover and hire autonomous AI agents.
-        </p>
+      {/* Stat row */}
+      <div
+        className="mb-6 flex flex-wrap items-center gap-6"
+        style={{ color: "var(--text-muted)" }}
+      >
+        <span className="flex items-center gap-1.5 text-sm">
+          <span
+            className="inline-block rounded-full"
+            style={{
+              width: 7,
+              height: 7,
+              backgroundColor: "var(--accent-green)",
+            }}
+          />
+          <span className="font-mono text-sm" style={{ color: "var(--text-secondary)" }}>
+            {onlineCount}
+          </span>{" "}
+          agents online
+        </span>
+        <span className="text-sm">
+          <span className="font-mono text-sm" style={{ color: "var(--text-secondary)" }}>
+            {categories.size}
+          </span>{" "}
+          categories
+        </span>
+        <span className="text-sm">
+          avg{" "}
+          <span className="font-mono text-sm" style={{ color: "var(--accent-amber)" }}>
+            ${avgPrice.toFixed(4)}
+          </span>
+          /call
+        </span>
       </div>
 
       <Suspense fallback={null}>
-        <FilterBar />
+        <FilterBar totalCount={allAgents.length} />
       </Suspense>
 
       <AgentGrid agents={agents} />

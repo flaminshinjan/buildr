@@ -1,4 +1,5 @@
 import { PriceTag } from "@/components/ui/price-tag";
+import { CATEGORY_COLORS } from "@/lib/constants";
 
 interface CategoryData {
   category: string;
@@ -6,26 +7,24 @@ interface CategoryData {
   total_earned: number;
 }
 
-const categoryColors: Record<string, { bg: string; bar: string }> = {
-  summarization: { bg: "var(--accent-green-light)", bar: "var(--accent-green)" },
-  translation: { bg: "var(--accent-blue-light)", bar: "var(--accent-blue)" },
-  "code-review": { bg: "var(--accent-amber-light)", bar: "var(--accent-amber)" },
-  research: { bg: "var(--accent-red-light)", bar: "var(--accent-red)" },
-  content: { bg: "var(--accent-blue-light)", bar: "var(--accent-blue)" },
-};
+function getColorForCategory(category: string): { bg: string; bar: string } {
+  const entry = CATEGORY_COLORS[category];
+  if (entry) return { bg: entry.bg, bar: entry.text };
 
-function getColorForCategory(category: string) {
-  if (categoryColors[category]) return categoryColors[category];
-  const colors = Object.values(categoryColors);
+  // Fallback: hash-based color from the constants palette
+  const allColors = Object.values(CATEGORY_COLORS);
   let hash = 0;
   for (let i = 0; i < category.length; i++) {
     hash = category.charCodeAt(i) + ((hash << 5) - hash);
   }
-  return colors[Math.abs(hash) % colors.length];
+  const picked = allColors[Math.abs(hash) % allColors.length];
+  return { bg: picked.bg, bar: picked.text };
 }
 
 export function CategoryBreakdown({ categories }: { categories: CategoryData[] }) {
-  if (categories.length === 0) {
+  const totalCount = categories.length;
+
+  if (totalCount === 0) {
     return (
       <div
         className="rounded-xl p-6"
@@ -56,9 +55,19 @@ export function CategoryBreakdown({ categories }: { categories: CategoryData[] }
         boxShadow: "var(--shadow-sm)",
       }}
     >
-      <h3 className="text-card-title mb-6" style={{ color: "var(--text-primary)" }}>
-        Category Breakdown
-      </h3>
+      {/* Header with total count */}
+      <div className="mb-6 flex items-baseline justify-between">
+        <h3 className="text-card-title" style={{ color: "var(--text-primary)" }}>
+          Category Breakdown
+        </h3>
+        <span
+          className="text-xs font-medium"
+          style={{ color: "var(--text-tertiary)" }}
+        >
+          {totalCount} categor{totalCount === 1 ? "y" : "ies"}
+        </span>
+      </div>
+
       <div className="space-y-4">
         {categories.map((cat) => {
           const colors = getColorForCategory(cat.category);
@@ -74,15 +83,26 @@ export function CategoryBreakdown({ categories }: { categories: CategoryData[] }
                   >
                     {cat.category}
                   </span>
-                  <span className="text-caption" style={{ color: "var(--text-tertiary)" }}>
-                    {cat.agent_count} agent{cat.agent_count !== 1 ? "s" : ""}
+                  {/* Agent count badge */}
+                  <span
+                    className="inline-flex items-center justify-center rounded-full text-xs font-medium"
+                    style={{
+                      minWidth: 22,
+                      height: 22,
+                      padding: "0 6px",
+                      backgroundColor: "var(--bg-tertiary)",
+                      color: "var(--text-secondary)",
+                    }}
+                  >
+                    {cat.agent_count}
                   </span>
                 </div>
                 <PriceTag amount={cat.total_earned} size="sm" />
               </div>
+              {/* Bar - taller at 6px */}
               <div
-                className="h-2 w-full overflow-hidden rounded-full"
-                style={{ backgroundColor: "var(--bg-tertiary)" }}
+                className="w-full overflow-hidden rounded-full"
+                style={{ height: 6, backgroundColor: "var(--bg-tertiary)" }}
               >
                 <div
                   className="h-full rounded-full transition-all duration-500"

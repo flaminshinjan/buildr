@@ -1,76 +1,113 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 
-const PAGE_TITLES: Record<string, string> = {
-  "/dashboard": "Overview",
-  "/dashboard/marketplace": "Marketplace",
-  "/dashboard/orchestrate": "Orchestrate",
-  "/dashboard/history": "Task History",
-  "/dashboard/register": "Register Agent",
+const PAGE_META: Record<string, { title: string; subtitle: string }> = {
+  "/dashboard": {
+    title: "Overview",
+    subtitle: "Real-time platform analytics",
+  },
+  "/dashboard/marketplace": {
+    title: "Marketplace",
+    subtitle: "50 autonomous AI agents",
+  },
+  "/dashboard/orchestrate": {
+    title: "Orchestrate",
+    subtitle: "Submit tasks and watch agents work",
+  },
+  "/dashboard/history": {
+    title: "History",
+    subtitle: "Past orchestration runs",
+  },
+  "/dashboard/register": {
+    title: "Register",
+    subtitle: "Add your agent to the marketplace",
+  },
 };
+
+function SearchIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="7" cy="7" r="5.5" stroke="#525252" strokeWidth="1.5" />
+      <path d="M11 11L14 14" stroke="#525252" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
 
 export function DashboardTopbar() {
   const pathname = usePathname();
-  const [balance, setBalance] = useState<string | null>(null);
 
-  // Derive page title from pathname
-  const title = PAGE_TITLES[pathname] || (pathname.startsWith("/dashboard/agent/") ? "Agent Detail" : "Dashboard");
-
-  useEffect(() => {
-    fetch("/api/locus/wallet")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.balance !== undefined) {
-          setBalance(Number(data.balance).toFixed(4));
-        }
-      })
-      .catch(() => {
-        setBalance(null);
-      });
-  }, []);
+  const isAgentDetail = pathname.startsWith("/dashboard/agent/");
+  const meta = isAgentDetail
+    ? { title: "Agent Detail", subtitle: "Performance and transaction history" }
+    : PAGE_META[pathname] ?? { title: "Dashboard", subtitle: "" };
 
   return (
     <div
       style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 30,
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "16px 32px",
+        height: 60,
+        padding: "0 40px",
         borderBottom: "1px solid var(--border-light)",
         backgroundColor: "var(--bg-primary)",
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <span style={{ fontSize: 13, color: "var(--text-tertiary)" }}>Dashboard</span>
-        <span style={{ fontSize: 13, color: "var(--text-tertiary)" }}>/</span>
-        <span style={{ fontSize: 14, fontWeight: 500, color: "var(--text-primary)" }}>{title}</span>
+      {/* Left — title + subtitle */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <h1
+          style={{
+            margin: 0,
+            fontSize: 20,
+            fontWeight: 600,
+            color: "var(--text-primary)",
+            lineHeight: 1.2,
+          }}
+        >
+          {meta.title}
+        </h1>
+        {meta.subtitle && (
+          <span
+            style={{
+              fontSize: 13,
+              color: "var(--text-tertiary)",
+              lineHeight: 1.2,
+            }}
+          >
+            {meta.subtitle}
+          </span>
+        )}
       </div>
 
+      {/* Right — search pill */}
       <div
         style={{
           display: "flex",
           alignItems: "center",
           gap: 8,
-          padding: "6px 14px",
+          width: 200,
+          height: 36,
+          padding: "0 14px",
           borderRadius: 9999,
           backgroundColor: "var(--bg-secondary)",
           border: "1px solid var(--border-light)",
-          fontSize: 13,
+          cursor: "default",
         }}
       >
+        <SearchIcon />
         <span
           style={{
-            display: "inline-block",
-            width: 8,
-            height: 8,
-            borderRadius: "50%",
-            backgroundColor: balance !== null ? "var(--accent-green)" : "var(--text-muted)",
+            fontSize: 13,
+            color: "#525252",
+            userSelect: "none",
+            whiteSpace: "nowrap",
           }}
-        />
-        <span style={{ color: "var(--text-secondary)", fontWeight: 500 }}>
-          {balance !== null ? `$${balance} USDC` : "Wallet"}
+        >
+          Search agents...
         </span>
       </div>
     </div>

@@ -200,34 +200,45 @@ export function CostEstimator({ taskInput }: CostEstimatorProps) {
   if (detected.length === 0) return null;
 
   const totalEstimate = detected.reduce((sum, d) => sum + d.estimatedPrice, 0);
+  const hasCategories = detected.length > 0;
 
   return (
     <div
-      className="mt-4 rounded-xl p-4"
+      className="mt-4 rounded-xl p-3 transition-all duration-300"
       style={{
         backgroundColor: "var(--bg-secondary)",
-        border: "1px solid var(--border-light)",
+        border: `1px solid ${hasCategories ? "var(--accent-blue)" : "var(--border-light)"}`,
+        animation: hasCategories ? "pulse-border 2s ease-in-out 1" : "none",
       }}
     >
-      <div className="mb-3 flex items-center justify-between">
-        <span className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--text-tertiary)" }}>
+      <div className="mb-2 flex items-center justify-between">
+        <span
+          className="text-[10px] font-semibold uppercase tracking-wide"
+          style={{ color: "var(--text-tertiary)" }}
+        >
           Cost Estimate
         </span>
         <span
-          className="rounded-full px-2.5 py-0.5 text-xs font-medium"
-          style={{ backgroundColor: "var(--accent-green-light)", color: "var(--accent-green)" }}
+          className="rounded-full px-2 py-0.5 text-[10px] font-medium"
+          style={{
+            backgroundColor: "var(--accent-green-light)",
+            color: "var(--accent-green)",
+          }}
         >
-          20% negotiation discount applied
+          -20% negotiated
         </span>
       </div>
 
-      <div className="flex flex-wrap gap-2 mb-3">
+      <div className="mb-2 flex flex-wrap gap-1.5">
         {detected.map((d) => {
-          const colors = CATEGORY_COLORS[d.category] || { bg: "var(--bg-tertiary)", text: "var(--text-secondary)" };
+          const colors = CATEGORY_COLORS[d.category] || {
+            bg: "var(--bg-tertiary)",
+            text: "var(--text-secondary)",
+          };
           return (
             <span
               key={d.category}
-              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium"
+              className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium"
               style={{ backgroundColor: colors.bg, color: colors.text }}
             >
               {d.label}
@@ -241,12 +252,19 @@ export function CostEstimator({ taskInput }: CostEstimatorProps) {
 
       <div
         className="flex items-center justify-between rounded-lg px-3 py-2"
-        style={{ backgroundColor: "var(--bg-tertiary)" }}
+        style={{
+          background:
+            "linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%)",
+          border: "1px solid var(--border-light)",
+        }}
       >
         <span className="text-xs" style={{ color: "var(--text-secondary)" }}>
           {detected.length} agent{detected.length !== 1 ? "s" : ""} estimated
         </span>
-        <span className="font-mono text-sm font-semibold" style={{ color: "var(--accent-amber)" }}>
+        <span
+          className="font-mono text-sm font-bold"
+          style={{ color: "var(--accent-amber)" }}
+        >
           ~${totalEstimate.toFixed(4)} USDC
         </span>
       </div>

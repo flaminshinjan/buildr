@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { TaskInput } from "@/components/orchestration/task-input";
 import { ExecutionTimeline } from "@/components/orchestration/execution-timeline";
 import { CostEstimator } from "@/components/orchestration/cost-estimator";
@@ -62,6 +62,17 @@ export default function OrchestratePage() {
   const [taskInput, setTaskInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [events, setEvents] = useState<OrchestrationEvent[]>([]);
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+
+  const handleTemplateClick = useCallback(
+    (template: TaskTemplate) => {
+      if (loading) return;
+      setTaskInput(template.prompt);
+      setSelectedTemplate(template.title);
+      setTimeout(() => setSelectedTemplate(null), 600);
+    },
+    [loading]
+  );
 
   async function handleSubmit() {
     if (!taskInput.trim()) return;
@@ -119,7 +130,7 @@ export default function OrchestratePage() {
 
   return (
     <section>
-      {/* Task Templates */}
+      {/* Task Templates — 3-column grid */}
       <div className="mb-6">
         <h3
           className="mb-3 text-xs font-semibold uppercase tracking-wide"
@@ -127,65 +138,82 @@ export default function OrchestratePage() {
         >
           Quick Templates
         </h3>
-        <div
-          className="flex gap-3 overflow-x-auto pb-2"
-          style={{ scrollbarWidth: "thin" }}
-        >
-          {TASK_TEMPLATES.map((template) => (
-            <button
-              key={template.title}
-              type="button"
-              onClick={() => setTaskInput(template.prompt)}
-              disabled={loading}
-              className="group shrink-0 rounded-xl p-3 text-left transition-all"
-              style={{
-                backgroundColor: "var(--bg-secondary)",
-                border: "1px solid var(--border-light)",
-                width: 220,
-                cursor: loading ? "not-allowed" : "pointer",
-                opacity: loading ? 0.6 : 1,
-              }}
-              onMouseEnter={(e) => {
-                if (!loading) {
-                  e.currentTarget.style.borderColor = "var(--accent-blue)";
-                  e.currentTarget.style.boxShadow = "var(--shadow-md)";
-                }
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "var(--border-light)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
-            >
-              <div className="mb-1.5 flex items-center justify-between">
-                <span
-                  className="text-sm font-bold leading-tight"
-                  style={{ color: "var(--text-primary)" }}
-                >
-                  {template.title}
-                </span>
-                <span
-                  className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold"
-                  style={{
-                    backgroundColor: "var(--accent-blue-light)",
-                    color: "var(--accent-blue)",
-                  }}
-                >
-                  {template.agentCount} agents
-                </span>
-              </div>
-              <span
-                className="line-clamp-1 text-xs"
-                style={{ color: "var(--text-tertiary)" }}
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-3">
+          {TASK_TEMPLATES.map((template) => {
+            const isSelected = selectedTemplate === template.title;
+            return (
+              <button
+                key={template.title}
+                type="button"
+                onClick={() => handleTemplateClick(template)}
+                disabled={loading}
+                className="group relative overflow-hidden rounded-xl p-3 text-left transition-all duration-200"
+                style={{
+                  backgroundColor: isSelected
+                    ? "var(--accent-blue-light)"
+                    : "var(--bg-primary)",
+                  border: `1px solid ${isSelected ? "var(--accent-blue)" : "var(--border-light)"}`,
+                  cursor: loading ? "not-allowed" : "pointer",
+                  opacity: loading ? 0.6 : 1,
+                }}
+                onMouseEnter={(e) => {
+                  if (!loading) {
+                    e.currentTarget.style.borderColor = "var(--accent-blue)";
+                    e.currentTarget.style.boxShadow =
+                      "0 1px 3px rgba(0,0,0,0.08)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isSelected) {
+                    e.currentTarget.style.borderColor = "var(--border-light)";
+                  }
+                  e.currentTarget.style.boxShadow = "none";
+                }}
               >
-                {template.subtitle}
-              </span>
-            </button>
-          ))}
+                {/* Left accent bar */}
+                <div
+                  className="absolute left-0 top-0 h-full"
+                  style={{
+                    width: 3,
+                    backgroundColor: "var(--accent-blue)",
+                    borderRadius: "3px 0 0 3px",
+                  }}
+                />
+                <div className="pl-2">
+                  <div className="mb-1 flex items-center gap-2">
+                    <span
+                      className="text-sm font-bold leading-tight"
+                      style={{ color: "var(--text-primary)" }}
+                    >
+                      {template.title}
+                    </span>
+                    <span
+                      className="shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-semibold leading-none"
+                      style={{
+                        backgroundColor: "var(--accent-blue-light)",
+                        color: "var(--accent-blue)",
+                      }}
+                    >
+                      {template.agentCount}
+                    </span>
+                  </div>
+                  <span
+                    className="line-clamp-1 text-xs"
+                    style={{ color: "var(--text-muted)" }}
+                  >
+                    {template.subtitle}
+                  </span>
+                </div>
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-5">
-        <div className="lg:col-span-2">
+      {/* Main area — 9-col grid */}
+      <div className="grid gap-8 lg:grid-cols-9">
+        {/* Left panel: Task input + cost estimator */}
+        <div className="lg:col-span-4">
           <TaskInput
             value={taskInput}
             onChange={setTaskInput}
@@ -195,7 +223,8 @@ export default function OrchestratePage() {
           <CostEstimator taskInput={taskInput} />
         </div>
 
-        <div className="lg:col-span-3">
+        {/* Right panel: Execution timeline */}
+        <div className="lg:col-span-5">
           <div
             className="rounded-xl p-6"
             style={{
@@ -205,11 +234,17 @@ export default function OrchestratePage() {
             }}
           >
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-card-title" style={{ color: "var(--text-primary)" }}>
+              <h3
+                className="text-card-title"
+                style={{ color: "var(--text-primary)" }}
+              >
                 Execution Timeline
               </h3>
               {loading && (
-                <span className="animate-pulse-skeleton rounded-full px-3 py-1 text-xs" style={{ backgroundColor: "var(--bg-tertiary)" }}>
+                <span
+                  className="animate-pulse-skeleton rounded-full px-3 py-1 text-xs"
+                  style={{ backgroundColor: "var(--bg-tertiary)" }}
+                >
                   Live
                 </span>
               )}
@@ -218,7 +253,10 @@ export default function OrchestratePage() {
           </div>
 
           <div className="mt-4 text-center">
-            <span className="text-caption" style={{ color: "var(--text-muted)" }}>
+            <span
+              className="text-caption"
+              style={{ color: "var(--text-muted)" }}
+            >
               Powered by Locus · All payments in USDC on Base
             </span>
           </div>
