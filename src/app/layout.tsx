@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "@/styles/globals.css";
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,13 +27,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
-      <body
-        className="min-h-screen flex flex-col"
-        style={{ fontFamily: "var(--font-inter), system-ui, sans-serif" }}
-      >
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+      <body style={{ fontFamily: "var(--font-inter), system-ui, sans-serif" }}>
+        {children}
       </body>
     </html>
   );

@@ -1,4 +1,3 @@
-import { Container } from "@/components/layout/container";
 import { EconomyStats } from "@/components/dashboard/economy-stats";
 import { CategoryBreakdown } from "@/components/dashboard/category-breakdown";
 import { AgentStatusOverview } from "@/components/dashboard/agent-status-overview";
@@ -128,63 +127,37 @@ export default function DashboardPage() {
   });
 
   return (
-    <section className="py-10">
-      <Container>
-        {/* Header */}
-        <div className="mb-8 flex items-end justify-between">
-          <div>
-            <h1
-              className="text-page-title mb-2"
-              style={{ color: "var(--text-primary)" }}
-            >
-              Dashboard
-            </h1>
-            <p className="text-body" style={{ color: "var(--text-secondary)" }}>
-              Real-time analytics for the agent economy.
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <span
-              className="inline-block h-2 w-2 rounded-full"
-              style={{ backgroundColor: "var(--accent-green)" }}
-            />
-            <span className="text-caption" style={{ color: "var(--text-tertiary)" }}>
-              Live
-            </span>
-          </div>
+    <>
+      {/* Row 1: 6 Stat Cards */}
+      <EconomyStats
+        stats={{
+          totalAgents,
+          onlineAgents,
+          totalTransacted,
+          tasksCompleted,
+          avgCost,
+          totalCategories,
+        }}
+      />
+
+      {/* Row 2: Category Breakdown (2/3) + Agent Status (1/3) */}
+      <div className="mb-8 grid gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <CategoryBreakdown categories={categories} />
         </div>
-
-        {/* Row 1: 6 Stat Cards */}
-        <EconomyStats
-          stats={{
-            totalAgents,
-            onlineAgents,
-            totalTransacted,
-            tasksCompleted,
-            avgCost,
-            totalCategories,
-          }}
-        />
-
-        {/* Row 2: Category Breakdown (2/3) + Agent Status (1/3) */}
-        <div className="mb-8 grid gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2">
-            <CategoryBreakdown categories={categories} />
-          </div>
-          <div>
-            <AgentStatusOverview counts={statusCounts} />
-          </div>
+        <div>
+          <AgentStatusOverview counts={statusCounts} />
         </div>
+      </div>
 
-        {/* Row 3: Top Earners (1/2) + Recent Transactions (1/2) */}
-        <div className="mb-8 grid gap-6 lg:grid-cols-2">
-          <AgentLeaderboard agents={topAgents} />
-          <TransactionFeed transactions={transactions} />
-        </div>
+      {/* Row 3: Top Earners (1/2) + Recent Transactions (1/2) */}
+      <div className="mb-8 grid gap-6 lg:grid-cols-2">
+        <AgentLeaderboard agents={topAgents} />
+        <TransactionFeed transactions={transactions} />
+      </div>
 
-        {/* Row 4: Recent Tasks (full width) */}
-        <RecentTasks tasks={taskRows} />
-      </Container>
-    </section>
+      {/* Row 4: Recent Tasks (full width) */}
+      <RecentTasks tasks={taskRows} />
+    </>
   );
 }

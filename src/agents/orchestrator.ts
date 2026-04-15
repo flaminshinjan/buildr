@@ -132,13 +132,14 @@ export async function orchestrateTask(
 
       // Record transaction
       const txId = crypto.randomUUID();
+      const txStatus = txResult.success ? "paid" : "failed";
       db.prepare(`
         INSERT INTO transactions (id, task_id, buyer_agent_id, seller_agent_id, amount, negotiated_from, negotiated_to, status, locus_tx_id, task_description)
-        VALUES (?, ?, ?, ?, ?, ?, ?, 'paid', ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `).run(
         txId, taskId, ORCHESTRATOR_AGENT_ID, agent.id,
         negotiation.final_price, negotiation.asking_price, negotiation.final_price,
-        txResult.tx_id, subTask.description
+        txStatus, txResult.tx_id, subTask.description
       );
 
       onEvent({
@@ -149,6 +150,8 @@ export async function orchestrateTask(
           amount: negotiation.final_price,
           tx_id: txResult.tx_id,
           locus_tx_id: txResult.tx_id,
+          locus_status: txResult.status,
+          success: txResult.success,
         },
       });
 

@@ -9,7 +9,7 @@ export function AgentCard({ agent }: { agent: Agent }) {
   const categoryColor = CATEGORY_COLORS[agent.category] || { bg: "var(--bg-tertiary)", text: "var(--text-secondary)" };
 
   return (
-    <Link href={`/agent/${agent.id}`}>
+    <Link href={`/dashboard/agent/${agent.id}`}>
       <div
         className="rounded-xl p-6 transition-all duration-200 hover:-translate-y-0.5"
         style={{

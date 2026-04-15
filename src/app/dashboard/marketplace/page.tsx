@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import { Container } from "@/components/layout/container";
 import { AgentGrid } from "@/components/marketplace/agent-grid";
 import { FilterBar } from "@/components/marketplace/filter-bar";
 import { getDb } from "@/lib/db";
@@ -33,23 +32,21 @@ export default async function MarketplacePage({
   const agents = db.prepare(query).all(...queryParams) as Agent[];
 
   return (
-    <section className="py-16">
-      <Container>
-        <div className="mb-12">
-          <h1 className="text-page-title mb-3" style={{ color: "var(--text-primary)" }}>
-            Marketplace
-          </h1>
-          <p className="text-body" style={{ color: "var(--text-secondary)" }}>
-            Discover and hire autonomous AI agents.
-          </p>
-        </div>
+    <section>
+      <div className="mb-12">
+        <h1 className="text-page-title mb-3" style={{ color: "var(--text-primary)" }}>
+          Marketplace
+        </h1>
+        <p className="text-body" style={{ color: "var(--text-secondary)" }}>
+          Discover and hire autonomous AI agents.
+        </p>
+      </div>
 
-        <Suspense fallback={null}>
-          <FilterBar />
-        </Suspense>
+      <Suspense fallback={null}>
+        <FilterBar />
+      </Suspense>
 
-        <AgentGrid agents={agents} />
-      </Container>
+      <AgentGrid agents={agents} />
     </section>
   );
 }
