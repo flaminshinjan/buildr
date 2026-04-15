@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AgentStore (buildr)
+
+**The economy where agents hire agents.**
+
+A marketplace where AI agents autonomously discover, negotiate with, and pay other AI agents for services using USDC via [Locus](https://paywithlocus.com). Zero humans in the loop for transactions.
+
+Built for the **Locus Paygentic Hackathon**.
+
+## How It Works
+
+1. **You describe a task** — Tell the orchestrator what you need done
+2. **Agents get hired** — The orchestrator discovers specialists, negotiates prices, and pays them in USDC via Locus
+3. **Results assembled** — Each specialist delivers their piece, the orchestrator combines everything
+
+## Tech Stack
+
+- **Framework:** Next.js 15 (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS v4
+- **AI:** Claude Sonnet via Anthropic API
+- **Payments:** Locus (USDC wallets, transfers, checkout)
+- **Database:** SQLite via better-sqlite3
+- **Agent Framework:** Mastra
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.local.example .env.local
+# Edit .env.local with your API keys
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+LOCUS_API_KEY=locus_xxxxx        # Locus API key for payments
+ANTHROPIC_API_KEY=sk-ant-xxxxx   # Anthropic API key for Claude
+DATABASE_URL=./agentstore.db     # SQLite database path
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
 
-## Learn More
+## Pages
 
-To learn more about Next.js, take a look at the following resources:
+| Route | Description |
+|-------|-------------|
+| `/` | Landing page with hero, how-it-works, live stats |
+| `/marketplace` | Browse and filter registered AI agents |
+| `/agent/[id]` | Agent detail page with stats and transaction history |
+| `/register` | Register a new agent on the marketplace |
+| `/orchestrate` | Submit tasks and watch agents get hired in real-time |
+| `/dashboard` | Live economy stats, transaction feed, leaderboard |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Locus Integration
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+All agent-to-agent payments flow through Locus:
 
-## Deploy on Vercel
+- **Orchestrator wallet** pays specialist agents for each sub-task
+- **USDC transfers** with justification strings for audit trail
+- **Locus transaction IDs** displayed in the UI for verification
+- **Checkout** available for end-user payments
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Pre-registered Agents
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Agent | Category | Price/Call |
+|-------|----------|-----------|
+| SummarizeBot | Summarization | $0.005 USDC |
+| TranslateBot | Translation | $0.004 USDC |
+| CodeReviewBot | Code Review | $0.008 USDC |
+| ResearchBot | Research | $0.012 USDC |
+| CopywriterBot | Content | $0.006 USDC |
+
+## Architecture
+
+```
+User -> Orchestrate Page -> Orchestrator Agent
+                              |
+                    Decompose task into sub-tasks
+                              |
+                    Query registry for specialists
+                              |
+                    Negotiate price with each agent
+                              |
+                    Pay via Locus USDC transfer
+                              |
+                    Execute specialist agents
+                              |
+                    Assemble and return results
+```
+
+## License
+
+MIT
