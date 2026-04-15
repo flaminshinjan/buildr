@@ -5,6 +5,51 @@ import { negotiate } from "./negotiator";
 import { transfer } from "@/lib/locus";
 import { ORCHESTRATOR_AGENT_ID } from "@/lib/constants";
 
+const URL_REGEX = /https?:\/\/[^\s,)}\]]+/gi;
+
+async function fetchUrlContent(url: string): Promise<string> {
+  try {
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; AgentStore/1.0)",
+        Accept: "text/html,application/xhtml+xml,text/plain",
+      },
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!res.ok) return "";
+    const html = await res.text();
+    // Strip HTML tags, scripts, styles to get plain text
+    const text = html
+      .replace(/<script[\s\S]*?<\/script>/gi, "")
+      .replace(/<style[\s\S]*?<\/style>/gi, "")
+      .replace(/<nav[\s\S]*?<\/nav>/gi, "")
+      .replace(/<footer[\s\S]*?<\/footer>/gi, "")
+      .replace(/<header[\s\S]*?<\/header>/gi, "")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/&[a-z]+;/gi, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    // Return first ~4000 chars to stay within token limits
+    return text.slice(0, 4000);
+  } catch {
+    return "";
+  }
+}
+
+async function resolveUrls(input: string): Promise<string> {
+  const urls = input.match(URL_REGEX);
+  if (!urls || urls.length === 0) return input;
+
+  let enriched = input;
+  for (const url of urls.slice(0, 3)) {
+    const content = await fetchUrlContent(url);
+    if (content.length > 100) {
+      enriched += `\n\n--- Content from ${url} ---\n${content}`;
+    }
+  }
+  return enriched;
+}
+
 export async function orchestrateTask(
   taskId: string,
   userInput: string,
@@ -14,9 +59,12 @@ export async function orchestrateTask(
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
   try {
+    // Step 0: Fetch content from any URLs in the input
+    const enrichedInput = await resolveUrls(userInput);
+
     // Step 1: Decompose task
     db.prepare("UPDATE tasks SET status = 'decomposing' WHERE id = ?").run(taskId);
-    const subTasks = decomposeTask(userInput);
+    const subTasks = decomposeTask(enrichedInput);
 
     onEvent({
       type: "decomposition",
@@ -238,6 +286,129 @@ function decomposeTask(userInput: string): SubTask[] {
       id: crypto.randomUUID(),
       description: `Create content: ${userInput}`,
       category: "content",
+      status: "pending",
+    });
+  }
+
+  if (input.includes("extract") || input.includes("scrape") || input.includes("parse") ||
+      input.includes("csv") || input.includes("json") || input.includes("pdf")) {
+    subTasks.push({
+      id: crypto.randomUUID(),
+      description: `Extract data: ${userInput}`,
+      category: "data-extraction",
+      status: "pending",
+    });
+  }
+
+  if (input.includes("sentiment") || input.includes("opinion") || input.includes("mood") ||
+      input.includes("feeling") || input.includes("positive") || input.includes("negative")) {
+    subTasks.push({
+      id: crypto.randomUUID(),
+      description: `Analyze sentiment: ${userInput}`,
+      category: "sentiment-analysis",
+      status: "pending",
+    });
+  }
+
+  if (input.includes("image") || input.includes("picture") || input.includes("illustration") ||
+      input.includes("visual") || input.includes("generate image") || input.includes("draw") ||
+      input.includes("design")) {
+    subTasks.push({
+      id: crypto.randomUUID(),
+      description: `Generate image: ${userInput}`,
+      category: "image-generation",
+      status: "pending",
+    });
+  }
+
+  if (input.includes("transcri") || input.includes("audio") || input.includes("speech") ||
+      input.includes("voice") || input.includes("podcast") || input.includes("recording")) {
+    subTasks.push({
+      id: crypto.randomUUID(),
+      description: `Transcribe audio: ${userInput}`,
+      category: "audio-transcription",
+      status: "pending",
+    });
+  }
+
+  if (input.includes("legal") || input.includes("contract") || input.includes("compliance") ||
+      input.includes("regulation") || input.includes("terms") || input.includes("privacy policy") ||
+      input.includes("law")) {
+    subTasks.push({
+      id: crypto.randomUUID(),
+      description: `Legal analysis: ${userInput}`,
+      category: "legal",
+      status: "pending",
+    });
+  }
+
+  if (input.includes("financ") || input.includes("invest") || input.includes("stock") ||
+      input.includes("budget") || input.includes("revenue") || input.includes("profit") ||
+      input.includes("forecast")) {
+    subTasks.push({
+      id: crypto.randomUUID(),
+      description: `Financial analysis: ${userInput}`,
+      category: "finance",
+      status: "pending",
+    });
+  }
+
+  if (input.includes("seo") || input.includes("keyword") || input.includes("search engine") ||
+      input.includes("ranking") || input.includes("backlink") || input.includes("meta tag")) {
+    subTasks.push({
+      id: crypto.randomUUID(),
+      description: `SEO optimization: ${userInput}`,
+      category: "seo",
+      status: "pending",
+    });
+  }
+
+  if (input.includes("qa") || input.includes("quality") || input.includes("regression") ||
+      input.includes("automation test")) {
+    subTasks.push({
+      id: crypto.randomUUID(),
+      description: `QA testing: ${userInput}`,
+      category: "qa-testing",
+      status: "pending",
+    });
+  }
+
+  if (input.includes("chart") || input.includes("graph") || input.includes("dashboard") ||
+      input.includes("visualiz") || input.includes("plot") || input.includes("diagram")) {
+    subTasks.push({
+      id: crypto.randomUUID(),
+      description: `Visualize data: ${userInput}`,
+      category: "data-visualization",
+      status: "pending",
+    });
+  }
+
+  if (input.includes("security") || input.includes("vulnerab") || input.includes("penetration") ||
+      input.includes("threat") || input.includes("firewall") || input.includes("encrypt")) {
+    subTasks.push({
+      id: crypto.randomUUID(),
+      description: `Security analysis: ${userInput}`,
+      category: "cybersecurity",
+      status: "pending",
+    });
+  }
+
+  if (input.includes("support") || input.includes("customer") || input.includes("ticket") ||
+      input.includes("help desk") || input.includes("faq") || input.includes("chatbot")) {
+    subTasks.push({
+      id: crypto.randomUUID(),
+      description: `Customer support: ${userInput}`,
+      category: "customer-support",
+      status: "pending",
+    });
+  }
+
+  if (input.includes("newsletter") || input.includes("drip") || input.includes("campaign") ||
+      input.includes("autorespond") || input.includes("mail")) {
+    subTasks.push({
+      id: crypto.randomUUID(),
+      description: `Email automation: ${userInput}`,
+      category: "email-automation",
       status: "pending",
     });
   }

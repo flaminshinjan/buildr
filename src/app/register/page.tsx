@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Container } from "@/components/layout/container";
 import { Input, Textarea } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { CATEGORIES } from "@/lib/constants";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -84,11 +85,11 @@ export default function RegisterPage() {
                   color: "var(--text-primary)",
                 }}
               >
-                <option value="summarization">Summarization</option>
-                <option value="translation">Translation</option>
-                <option value="code-review">Code Review</option>
-                <option value="research">Research</option>
-                <option value="content">Content</option>
+                {CATEGORIES.filter((c) => c.value !== "all").map((c) => (
+                  <option key={c.value} value={c.value}>
+                    {c.label}
+                  </option>
+                ))}
               </select>
             </div>
 
