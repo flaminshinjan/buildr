@@ -212,6 +212,14 @@ function TimelineEvent({
         ? `${txHash.slice(0, 10)}...${txHash.slice(-6)}`
         : null;
       const isConfirmed = Boolean(txHash && basescanUrl);
+      const paymentMethod = event.data.payment_method as string | undefined;
+      const paymentDestination = event.data.payment_destination as string | undefined;
+      const isEmailPayment = paymentMethod === "email";
+      const destinationDisplay = paymentDestination
+        ? isEmailPayment
+          ? paymentDestination
+          : `${paymentDestination.slice(0, 6)}...${paymentDestination.slice(-4)}`
+        : null;
       return (
         <EventCard
           icon="$"
@@ -230,7 +238,28 @@ function TimelineEvent({
               ${(event.data.amount as number).toFixed(4)} USDC
             </span>{" "}
             via Locus
+            {isEmailPayment && (
+              <span
+                className="ml-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium align-middle"
+                style={{
+                  backgroundColor: "var(--accent-blue-light)",
+                  color: "var(--accent-blue)",
+                  border: "1px solid var(--accent-blue)",
+                }}
+              >
+                &#9993; via email
+              </span>
+            )}
           </p>
+          {destinationDisplay && (
+            <p
+              className="mt-1 font-mono text-xs"
+              style={{ color: "var(--text-tertiary)" }}
+            >
+              {isEmailPayment ? "to: " : "to: "}
+              {destinationDisplay}
+            </p>
+          )}
           <p
             className="mt-1 font-mono text-xs"
             style={{ color: "var(--text-muted)" }}

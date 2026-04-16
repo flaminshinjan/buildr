@@ -2,8 +2,15 @@ import { getDb } from "@/lib/db";
 import { SubTask, OrchestrationEvent } from "@/lib/schema";
 import { findBestAgent, updateAgentStatus, incrementAgentStats } from "./registry";
 import { negotiate } from "./negotiator";
-import { transfer, getTransaction, getBasescanTxUrl } from "@/lib/locus";
+import { transfer, transferByEmail, getTransaction, getBasescanTxUrl } from "@/lib/locus";
 import { ORCHESTRATOR_AGENT_ID } from "@/lib/constants";
+
+const AVAILABLE_CATEGORIES = [
+  "summarization", "translation", "code-review", "research", "content",
+  "data-extraction", "sentiment-analysis", "image-generation", "audio-transcription",
+  "legal", "finance", "seo", "qa-testing", "data-visualization",
+  "cybersecurity", "customer-support", "email-automation",
+];
 
 const URL_REGEX = /https?:\/\/[^\s,)}\]]+/gi;
 
@@ -64,7 +71,7 @@ export async function orchestrateTask(
 
     // Step 1: Decompose task
     db.prepare("UPDATE tasks SET status = 'decomposing' WHERE id = ?").run(taskId);
-    const subTasks = decomposeTask(enrichedInput);
+    const subTasks = await decomposeTask(enrichedInput);
 
     onEvent({
       type: "decomposition",
@@ -123,12 +130,19 @@ export async function orchestrateTask(
       // Pay via Locus
       updateAgentStatus(agent.id, "busy");
       const apiKey = process.env.LOCUS_API_KEY || "";
-      const txResult = await transfer(
-        apiKey,
-        agent.locus_wallet_address,
-        negotiation.final_price,
-        `Payment for ${subTask.category} task #${taskId.slice(0, 8)}`
-      );
+      const txResult = agent.payment_email
+        ? await transferByEmail(
+            apiKey,
+            agent.payment_email,
+            negotiation.final_price,
+            `Payment for ${subTask.category} task #${taskId.slice(0, 8)}`
+          )
+        : await transfer(
+            apiKey,
+            agent.locus_wallet_address,
+            negotiation.final_price,
+            `Payment for ${subTask.category} task #${taskId.slice(0, 8)}`
+          );
 
       // Poll Locus for the on-chain tx_hash (confirmation typically takes 10-30s)
       let txHash: string | null = null;
@@ -167,6 +181,8 @@ export async function orchestrateTask(
           basescan_url: txHash ? getBasescanTxUrl(txHash) : null,
           locus_status: txResult.status,
           success: txResult.success,
+          payment_destination: agent.payment_email || agent.locus_wallet_address,
+          payment_method: agent.payment_email ? "email" : "wallet",
         },
       });
 
@@ -252,7 +268,65 @@ export async function orchestrateTask(
   }
 }
 
-function decomposeTask(userInput: string): SubTask[] {
+async function decomposeTask(userInput: string): Promise<SubTask[]> {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+
+  // Fallback: if no API key, use simple keyword heuristic (keep existing logic as fallback)
+  if (!apiKey || apiKey === "sk-ant-demo") {
+    return keywordDecompose(userInput);
+  }
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "claude-3-5-haiku-latest",
+        max_tokens: 1024,
+        system: `You are a task decomposer for an AI agent marketplace. Break the user's task into sub-tasks, each assigned to ONE category from this list: ${AVAILABLE_CATEGORIES.join(", ")}.
+
+Return ONLY valid JSON in this exact shape, no markdown, no explanation:
+{
+  "subTasks": [
+    { "category": "summarization", "description": "specific description of what this sub-task does" }
+  ]
+}
+
+Rules:
+- Each sub-task must have a category from the list above
+- Descriptions should be specific and actionable (not generic)
+- Aim for 1-4 sub-tasks per user input
+- Don't duplicate categories unless truly needed
+- If the task is simple, use just 1 sub-task`,
+        messages: [{ role: "user", content: userInput }],
+      }),
+    });
+
+    const data = await res.json();
+    const text = data.content?.[0]?.text || "";
+    const parsed = JSON.parse(text);
+
+    if (!Array.isArray(parsed.subTasks)) throw new Error("bad response");
+
+    return parsed.subTasks
+      .filter((st: { category: string; description: string }) => AVAILABLE_CATEGORIES.includes(st.category))
+      .map((st: { category: string; description: string }) => ({
+        id: crypto.randomUUID(),
+        description: st.description,
+        category: st.category,
+        status: "pending" as const,
+      }));
+  } catch (err) {
+    console.error("[Decompose] LLM failed, falling back to keywords:", err);
+    return keywordDecompose(userInput);
+  }
+}
+
+function keywordDecompose(userInput: string): SubTask[] {
   const input = userInput.toLowerCase();
   const subTasks: SubTask[] = [];
 

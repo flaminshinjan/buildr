@@ -154,6 +154,51 @@ export async function transfer(
   }
 }
 
+export async function transferByEmail(
+  apiKey: string,
+  email: string,
+  amount: number,
+  memo: string
+): Promise<TransferResult> {
+  try {
+    const res = await fetch(`${LOCUS_BASE_URL}/pay/send-email`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, amount, memo, expires_in_days: 30 }),
+    });
+    const json = await res.json();
+    if (!res.ok || !json.success || !json.data) {
+      return {
+        success: false,
+        tx_id: `failed_${crypto.randomUUID().slice(0, 8)}`,
+        status: "failed",
+        tx_hash: null,
+        basescan_url: null,
+        error: json.message || json.error || `HTTP ${res.status}`,
+      };
+    }
+    return {
+      success: true,
+      tx_id: json.data.transaction_id,
+      status: json.data.status || "QUEUED",
+      tx_hash: null,
+      basescan_url: null,
+    };
+  } catch (err) {
+    return {
+      success: false,
+      tx_id: `error_${crypto.randomUUID().slice(0, 8)}`,
+      status: "error",
+      tx_hash: null,
+      basescan_url: null,
+      error: err instanceof Error ? err.message : "Unknown error",
+    };
+  }
+}
+
 export async function getTransactions(apiKey: string, limit = 50): Promise<TransactionData[]> {
   try {
     const res = await fetch(`${LOCUS_BASE_URL}/pay/transactions?limit=${limit}`, {

@@ -8,10 +8,12 @@ export interface Agent {
   output_schema: string | null;
   endpoint: string;
   locus_wallet_address: string;
+  payment_email?: string | null;
   status: "online" | "offline" | "busy";
   rating: number;
   total_jobs: number;
   total_earned: number;
+  wrapped_api?: string | null;
   created_at: string;
   updated_at: string;
 }

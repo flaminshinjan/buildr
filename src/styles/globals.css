@@ -156,6 +156,11 @@ textarea::placeholder {
   50% { transform: translateY(-1px); }
 }
 
+/* Landing-page demo task card — lime border on hover */
+.demo-task-card:hover {
+  border-color: var(--accent-lime) !important;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
 }

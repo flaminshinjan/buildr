@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useCallback, useMemo, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { TaskInput } from "@/components/orchestration/task-input";
 import { ExecutionTimeline } from "@/components/orchestration/execution-timeline";
 import { CostEstimator } from "@/components/orchestration/cost-estimator";
@@ -59,10 +59,19 @@ const TASK_TEMPLATES: TaskTemplate[] = [
   },
 ];
 
-export default function OrchestratePage() {
+function OrchestratePageInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [taskInput, setTaskInput] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+
+  // Pre-fill the task input from ?task= query param (e.g. demo links on the landing page)
+  useEffect(() => {
+    const presetTask = searchParams.get("task");
+    if (presetTask) {
+      setTaskInput(presetTask);
+    }
+  }, [searchParams]);
 
   // Zustand store selectors — subscribe to the background task state
   const activeRunId = useTaskStore((s) => s.activeRunId);
@@ -400,5 +409,13 @@ export default function OrchestratePage() {
         </div>
       </div>
     </section>
+  );
+}
+
+export default function OrchestratePage() {
+  return (
+    <Suspense fallback={null}>
+      <OrchestratePageInner />
+    </Suspense>
   );
 }

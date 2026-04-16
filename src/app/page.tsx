@@ -7,6 +7,35 @@ import { getDb } from "@/lib/db";
 import { Agent } from "@/lib/schema";
 import { CATEGORIES, CATEGORY_COLORS } from "@/lib/constants";
 
+/* ── Demo tasks (landing page pre-fill links) ──────────────────────── */
+
+const DEMO_TASKS: { title: string; description: string; task: string }[] = [
+  {
+    title: "Research AI agent frameworks",
+    description:
+      "Research the latest AI agent frameworks, summarize the key findings, and write a blog post about it",
+    task: "Research the latest AI agent frameworks, summarize the key findings, and write a blog post about it",
+  },
+  {
+    title: "Scrape and translate article",
+    description:
+      "Scrape https://www.anthropic.com/news and translate the top article to Japanese",
+    task: "Scrape https://www.anthropic.com/news and translate the top article to Japanese",
+  },
+  {
+    title: "Generate marketing content",
+    description:
+      "Write SEO-optimized marketing copy for a Web3 payment tool and generate an accompanying image",
+    task: "Write SEO-optimized marketing copy for a Web3 payment tool and generate an accompanying image",
+  },
+  {
+    title: "Analyze and chart data",
+    description:
+      "Research the US stock market today, analyze sentiment, and describe a chart showing the trends",
+    task: "Research the US stock market today, analyze sentiment, and describe a chart showing the trends",
+  },
+];
+
 /* ── Data fetching ─────────────────────────────────────────────────── */
 
 function getStats() {
@@ -662,6 +691,36 @@ export default function HomePage() {
           </Container>
         </section>
 
+        {/* ── Popular demo tasks ──────────────────────────────────── */}
+        <section className="py-24 md:py-32" style={{ backgroundColor: "var(--bg-primary)" }}>
+          <Container>
+            <div className="mb-16 max-w-xl">
+              <p
+                className="text-caption mb-3 font-medium uppercase tracking-widest"
+                style={{ color: "var(--accent-lime, #CBFF3B)" }}
+              >
+                Try it
+              </p>
+              <h2 className="text-page-title" style={{ color: "var(--text-primary)" }}>
+                Popular demo tasks
+              </h2>
+              <p
+                className="text-body mt-4"
+                style={{ color: "var(--text-secondary)", fontSize: 17, lineHeight: 1.7 }}
+              >
+                Skip the setup — click any task below to land on the orchestrator with it
+                pre-filled, then hit Run.
+              </p>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              {DEMO_TASKS.map((t) => (
+                <DemoTaskCard key={t.title} title={t.title} description={t.description} task={t.task} />
+              ))}
+            </div>
+          </Container>
+        </section>
+
         {/* ── Final CTA ───────────────────────────────────────────── */}
         <section className="py-24 md:py-32" style={{ backgroundColor: "var(--bg-primary)" }}>
           <Container>
@@ -855,6 +914,66 @@ function CompletionRow({ label, status }: { label: string; status: string }) {
         {status}
       </span>
     </div>
+  );
+}
+
+function DemoTaskCard({
+  title,
+  description,
+  task,
+}: {
+  title: string;
+  description: string;
+  task: string;
+}) {
+  const href = `/dashboard/orchestrate?task=${encodeURIComponent(task)}`;
+  return (
+    <Link
+      href={href}
+      className="demo-task-card group flex flex-col justify-between transition-all duration-200 hover:-translate-y-0.5"
+      style={{
+        backgroundColor: "var(--bg-card, #141414)",
+        border: "1px solid var(--border-light, #252525)",
+        borderRadius: 12,
+        padding: 20,
+      }}
+    >
+      <div>
+        <h3
+          className="mb-2 text-lg font-bold leading-tight"
+          style={{ color: "var(--text-primary, #FFFFFF)" }}
+        >
+          {title}
+        </h3>
+        <p
+          className="mb-5 text-sm leading-relaxed"
+          style={{ color: "var(--text-secondary, #B8B8B8)" }}
+        >
+          {description}
+        </p>
+      </div>
+      <span
+        className="inline-flex items-center gap-1.5 text-sm font-semibold"
+        style={{ color: "var(--accent-lime, #CBFF3B)" }}
+      >
+        Run this
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="transition-transform duration-200 group-hover:translate-x-0.5"
+          aria-hidden="true"
+        >
+          <line x1="5" y1="12" x2="19" y2="12" />
+          <polyline points="12 5 19 12 12 19" />
+        </svg>
+      </span>
+    </Link>
   );
 }
 
