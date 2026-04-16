@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Modal } from "@/components/ui/modal";
+import { useTaskStore } from "@/lib/task-store";
 
 interface WalletData {
   balance: number;
@@ -128,6 +129,39 @@ export function WalletWidget() {
     const id = setInterval(fetchWallet, 30_000);
     return () => clearInterval(id);
   }, [fetchWallet]);
+
+  // Refresh after any task run completes
+  const completedAt = useTaskStore((s) => s.completedAt);
+  useEffect(() => {
+    if (completedAt > 0) {
+      // Slight delay to let on-chain balance settle, then refresh twice
+      const t1 = setTimeout(fetchWallet, 1500);
+      const t2 = setTimeout(fetchWallet, 6000);
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+      };
+    }
+  }, [completedAt, fetchWallet]);
+
+  // Also refresh on each payment event during an active run
+  const runs = useTaskStore((s) => s.runs);
+  const paymentCountRef = useRef(0);
+  useEffect(() => {
+    let paymentCount = 0;
+    for (const run of Object.values(runs)) {
+      for (const ev of run.events) {
+        if (ev.type === "payment") paymentCount++;
+      }
+    }
+    if (paymentCount > paymentCountRef.current) {
+      paymentCountRef.current = paymentCount;
+      // Debounce — slight delay to let the tx confirm
+      const t = setTimeout(fetchWallet, 2500);
+      return () => clearTimeout(t);
+    }
+    paymentCountRef.current = paymentCount;
+  }, [runs, fetchWallet]);
 
   const handleCopy = useCallback(() => {
     if (!wallet?.wallet_address) return;

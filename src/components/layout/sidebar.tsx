@@ -56,6 +56,15 @@ function SparkleIcon() {
   );
 }
 
+function ReceiptIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3 1.5L4 2.5L5 1.5L6 2.5L7 1.5L8 2.5L9 1.5L10 2.5L11 1.5L12 2.5L13 1.5V14.5L12 13.5L11 14.5L10 13.5L9 14.5L8 13.5L7 14.5L6 13.5L5 14.5L4 13.5L3 14.5V1.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+      <path d="M5.5 5.5H10.5M5.5 8H10.5M5.5 10.5H8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 function PlusIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -87,6 +96,7 @@ const SECTIONS: { title: string; items: NavItem[] }[] = [
     items: [
       { label: "History", href: "/dashboard/history", icon: ClockIcon },
       { label: "Playground", href: "/dashboard/playground", icon: SparkleIcon },
+      { label: "Transactions", href: "/dashboard/transactions", icon: ReceiptIcon },
     ],
   },
   {

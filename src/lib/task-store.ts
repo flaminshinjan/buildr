@@ -19,6 +19,11 @@ interface TaskStoreState {
   runs: Record<string, RunningTask>;
   order: string[]; // newest first
   activeRunId: string | null; // currently viewed / just-started
+  /**
+   * Monotonic counter that increments whenever a task completes or fails.
+   * Subscribers (like WalletWidget) can watch this to refresh their state.
+   */
+  completedAt: number;
   startRun: (userInput: string) => string;
   getActiveRun: () => RunningTask | null;
   setActiveRunId: (id: string | null) => void;
@@ -30,6 +35,7 @@ export const useTaskStore = create<TaskStoreState>((set, get) => ({
   runs: {},
   order: [],
   activeRunId: null,
+  completedAt: 0,
 
   setActiveRunId(id) {
     set({ activeRunId: id });
@@ -135,6 +141,7 @@ async function runOrchestration(
             endedAt: Date.now(),
           },
         },
+        completedAt: Date.now(),
       };
     });
   }

@@ -29,6 +29,10 @@ const PAGE_META: Record<string, { title: string; subtitle: string }> = {
     title: "Agent Playground",
     subtitle: "View agent outputs and payment details",
   },
+  "/dashboard/transactions": {
+    title: "Transactions",
+    subtitle: "On-chain USDC payment history",
+  },
 };
 
 function SearchIcon() {
