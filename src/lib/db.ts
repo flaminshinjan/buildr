@@ -1,16 +1,41 @@
 import Database from "better-sqlite3";
 import path from "path";
 
-const DB_PATH = process.env.DATABASE_URL || path.join(process.cwd(), "agentstore.db");
+/**
+ * Resolve the DB path.
+ * - If DATABASE_URL is set, use it.
+ * - On Vercel (process.env.VERCEL === "1") default to /tmp (the only writable dir).
+ * - Otherwise fall back to the project root for local dev.
+ */
+function resolveDbPath(): string {
+  if (process.env.DATABASE_URL) {
+    // Normalise: if user accidentally wrote "./..." on Vercel, rewrite to /tmp/
+    if (process.env.VERCEL === "1" && !process.env.DATABASE_URL.startsWith("/")) {
+      return "/tmp/agentstore.db";
+    }
+    return process.env.DATABASE_URL;
+  }
+  if (process.env.VERCEL === "1") {
+    return "/tmp/agentstore.db";
+  }
+  return path.join(process.cwd(), "agentstore.db");
+}
 
-let db: Database.Database;
+const DB_PATH = resolveDbPath();
+
+let db: Database.Database | null = null;
 
 export function getDb(): Database.Database {
   if (!db) {
-    db = new Database(DB_PATH);
-    db.pragma("journal_mode = WAL");
-    db.pragma("foreign_keys = ON");
-    initializeDb(db);
+    try {
+      db = new Database(DB_PATH);
+      db.pragma("journal_mode = WAL");
+      db.pragma("foreign_keys = ON");
+      initializeDb(db);
+    } catch (err) {
+      console.error("[DB] Failed to open database at", DB_PATH, err);
+      throw err;
+    }
   }
   return db;
 }
