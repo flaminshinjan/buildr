@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { WalletWidget } from "./wallet-widget";
 
 /* ── Icon components (18×18 SVG) ──────────────────────────────── */
 
@@ -85,24 +86,12 @@ const SECTIONS: { title: string; items: NavItem[] }[] = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const [balance, setBalance] = useState<string | null>(null);
   const [hoveredHref, setHoveredHref] = useState<string | null>(null);
 
   function isActive(href: string) {
     if (href === "/dashboard") return pathname === "/dashboard";
     return pathname.startsWith(href);
   }
-
-  useEffect(() => {
-    fetch("/api/locus/wallet")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.balance !== undefined) {
-          setBalance(Number(data.balance).toFixed(4));
-        }
-      })
-      .catch(() => setBalance(null));
-  }, []);
 
   return (
     <aside
@@ -231,46 +220,7 @@ export function Sidebar() {
 
       {/* Bottom section */}
       <div style={{ padding: "16px 16px 20px" }}>
-        {/* Wallet card */}
-        <div
-          style={{
-            backgroundColor: "#1A1A1A",
-            borderRadius: 12,
-            padding: "12px 16px",
-            marginBottom: 16,
-            border: "1px solid rgba(255,255,255,0.05)",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: 6,
-            }}
-          >
-            <span style={{ fontSize: 12, fontWeight: 500, color: "#6B6B6B", letterSpacing: "0.02em" }}>
-              Wallet
-            </span>
-            <span
-              style={{
-                display: "inline-block",
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                backgroundColor: balance !== null ? "#34D399" : "#525252",
-                boxShadow: balance !== null ? "0 0 6px rgba(52,211,153,0.4)" : "none",
-                transition: "background-color 150ms, box-shadow 150ms",
-              }}
-            />
-          </div>
-          <div style={{ fontSize: 18, fontWeight: 600, color: "#FFFFFF", letterSpacing: "-0.01em" }}>
-            {balance !== null ? `$${balance}` : "—"}
-          </div>
-          {balance !== null && (
-            <div style={{ fontSize: 11, color: "#525252", marginTop: 2 }}>USDC</div>
-          )}
-        </div>
+        <WalletWidget />
 
         {/* Powered by */}
         <div
@@ -279,6 +229,7 @@ export function Sidebar() {
             color: "#3D3D3D",
             textAlign: "center",
             letterSpacing: "0.02em",
+            marginTop: 14,
           }}
         >
           Powered by Locus
