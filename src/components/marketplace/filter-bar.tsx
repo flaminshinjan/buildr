@@ -36,22 +36,27 @@ export function FilterBar({ totalCount }: { totalCount?: number }) {
             <button
               key={cat.value}
               onClick={() => setFilter("category", cat.value)}
-              className="rounded-full text-sm font-medium transition-all duration-200"
+              className="rounded-full text-sm transition-colors duration-200"
               style={{
                 padding: "8px 16px",
-                backgroundColor: isActive ? "#1A1A1A" : "transparent",
-                color: isActive ? "#FFFFFF" : "var(--text-secondary)",
-                border: isActive ? "1px solid #1A1A1A" : "1px solid var(--border-light)",
-                boxShadow: isActive ? "0 2px 8px rgba(0,0,0,0.15)" : "none",
+                backgroundColor: isActive ? "var(--accent-lime)" : "transparent",
+                color: isActive ? "var(--text-inverse)" : "var(--text-secondary)",
+                border: isActive
+                  ? "1px solid var(--accent-lime)"
+                  : "1px solid var(--border-medium)",
+                fontWeight: isActive ? 600 : 500,
+                cursor: "pointer",
               }}
               onMouseEnter={(e) => {
                 if (!isActive) {
-                  e.currentTarget.style.backgroundColor = "var(--bg-secondary)";
+                  e.currentTarget.style.borderColor = "var(--accent-lime)";
+                  e.currentTarget.style.color = "var(--accent-lime)";
                 }
               }}
               onMouseLeave={(e) => {
                 if (!isActive) {
-                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.borderColor = "var(--border-medium)";
+                  e.currentTarget.style.color = "var(--text-secondary)";
                 }
               }}
             >
@@ -65,17 +70,17 @@ export function FilterBar({ totalCount }: { totalCount?: number }) {
         <select
           value={activeSort}
           onChange={(e) => setFilter("sort", e.target.value)}
-          className="cursor-pointer appearance-none rounded-full pr-9 pl-4 py-2 text-sm outline-none transition-all duration-200"
+          className="cursor-pointer appearance-none rounded-full pr-9 pl-4 py-2 text-sm outline-none transition-colors duration-200"
           style={{
-            backgroundColor: "transparent",
-            border: "1px solid var(--border-light)",
-            color: "var(--text-secondary)",
+            backgroundColor: "var(--bg-card)",
+            border: "1px solid var(--border-medium)",
+            color: "var(--text-primary)",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--bg-secondary)";
+            e.currentTarget.style.borderColor = "var(--accent-lime)";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "transparent";
+            e.currentTarget.style.borderColor = "var(--border-medium)";
           }}
         >
           <option value="">Sort by</option>

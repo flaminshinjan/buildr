@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+
 interface CardProps {
   children: React.ReactNode;
   className?: string;
@@ -6,16 +10,18 @@ interface CardProps {
 }
 
 export function Card({ children, className = "", hover = true, onClick }: CardProps) {
+  const [hovered, setHovered] = useState(false);
+
   return (
     <div
-      className={`rounded-xl p-6 transition-all duration-200 ${
-        hover ? "hover:-translate-y-0.5 cursor-pointer" : ""
-      } ${className}`}
+      className={`p-6 transition-all duration-150 ${hover ? "cursor-pointer" : ""} ${className}`}
       style={{
-        backgroundColor: "var(--bg-primary)",
-        border: "1px solid var(--border-light)",
-        boxShadow: "var(--shadow-sm)",
+        backgroundColor: "var(--bg-card)",
+        border: `1px solid ${hover && hovered ? "var(--border-medium)" : "var(--border-light)"}`,
+        borderRadius: 12,
       }}
+      onMouseEnter={() => hover && setHovered(true)}
+      onMouseLeave={() => hover && setHovered(false)}
       onClick={onClick}
     >
       {children}

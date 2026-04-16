@@ -43,17 +43,23 @@ export function RecentTasks({ tasks }: { tasks: TaskRow[] }) {
   if (tasks.length === 0) {
     return (
       <div
-        className="rounded-xl p-6"
         style={{
-          backgroundColor: "var(--bg-primary)",
+          backgroundColor: "var(--bg-card)",
           border: "1px solid var(--border-light)",
-          boxShadow: "var(--shadow-sm)",
+          borderRadius: 12,
+          padding: 24,
         }}
       >
-        <h3 className="text-card-title mb-4" style={{ color: "var(--text-primary)" }}>
+        <h3
+          className="text-card-title mb-4"
+          style={{ color: "var(--text-primary)", fontWeight: 700 }}
+        >
           Recent Tasks
         </h3>
-        <p className="py-8 text-center text-body" style={{ color: "var(--text-tertiary)" }}>
+        <p
+          className="py-8 text-center text-body"
+          style={{ color: "var(--text-tertiary)" }}
+        >
           No tasks have been orchestrated yet.
         </p>
       </div>
@@ -62,19 +68,21 @@ export function RecentTasks({ tasks }: { tasks: TaskRow[] }) {
 
   return (
     <div
-      className="rounded-2xl border p-6"
       style={{
-        background:
-          "linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, transparent 50%), var(--bg-primary)",
+        backgroundColor: "var(--bg-card)",
         border: "1px solid var(--border-light)",
-        boxShadow: "var(--shadow-sm)",
+        borderRadius: 12,
+        padding: 24,
       }}
     >
       <div className="mb-6 flex items-center justify-between">
-        <h3 className="text-card-title" style={{ color: "var(--text-primary)" }}>
+        <h3
+          className="text-card-title"
+          style={{ color: "var(--text-primary)", fontWeight: 700 }}
+        >
           Recent Tasks
         </h3>
-        <span className="text-caption" style={{ color: "var(--text-tertiary)" }}>
+        <span className="text-caption" style={{ color: "var(--text-muted)" }}>
           Orchestration history
         </span>
       </div>
@@ -84,64 +92,109 @@ export function RecentTasks({ tasks }: { tasks: TaskRow[] }) {
           className="mb-2 grid min-w-[760px] gap-4 rounded-lg px-4 py-2"
           style={{
             gridTemplateColumns: "2fr 110px 90px 110px 110px",
-            backgroundColor: "var(--bg-tertiary)",
+            backgroundColor: "var(--bg-elevated)",
+            border: "1px solid var(--border-light)",
           }}
         >
-          <span className="text-caption font-medium" style={{ color: "var(--text-tertiary)" }}>
+          <span
+            style={{
+              fontSize: 11,
+              fontWeight: 500,
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              color: "var(--text-muted)",
+            }}
+          >
             Task
           </span>
-          <span className="text-caption font-medium" style={{ color: "var(--text-tertiary)" }}>
+          <span
+            style={{
+              fontSize: 11,
+              fontWeight: 500,
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              color: "var(--text-muted)",
+            }}
+          >
             Status
           </span>
-          <span className="text-caption font-medium text-center" style={{ color: "var(--text-tertiary)" }}>
+          <span
+            style={{
+              fontSize: 11,
+              fontWeight: 500,
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              color: "var(--text-muted)",
+              textAlign: "center",
+            }}
+          >
             Sub-tasks
           </span>
-          <span className="text-caption font-medium text-right" style={{ color: "var(--text-tertiary)" }}>
+          <span
+            style={{
+              fontSize: 11,
+              fontWeight: 500,
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              color: "var(--text-muted)",
+              textAlign: "right",
+            }}
+          >
             Cost
           </span>
-          <span className="text-caption font-medium text-right" style={{ color: "var(--text-tertiary)" }}>
+          <span
+            style={{
+              fontSize: 11,
+              fontWeight: 500,
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              color: "var(--text-muted)",
+              textAlign: "right",
+            }}
+          >
             Duration
           </span>
         </div>
 
         <div className="min-w-[760px] space-y-1">
-        {tasks.map((task) => (
-          <div
-            key={task.id}
-            className="grid items-center gap-4 rounded-lg px-4 py-3 transition-all duration-200 hover:translate-x-0.5"
-            style={{
-              gridTemplateColumns: "2fr 110px 90px 110px 110px",
-              backgroundColor: "var(--bg-secondary)",
-              border: "1px solid transparent",
-            }}
-          >
-            <p
-              className="truncate text-sm font-medium"
-              style={{ color: "var(--text-primary)" }}
-              title={task.user_input}
+          {tasks.map((task) => (
+            <div
+              key={task.id}
+              className="grid items-center gap-4 px-4 py-3 transition-colors duration-200"
+              style={{
+                gridTemplateColumns: "2fr 110px 90px 110px 110px",
+                backgroundColor: "var(--bg-elevated)",
+                border: "1px solid var(--border-light)",
+                borderRadius: 8,
+              }}
             >
-              {task.user_input}
-            </p>
-            <div>
-              <Badge variant={statusVariant(task.status)}>{task.status}</Badge>
+              <p
+                className="truncate text-sm font-medium"
+                style={{ color: "var(--text-primary)" }}
+                title={task.user_input}
+              >
+                {task.user_input}
+              </p>
+              <div>
+                <Badge variant={statusVariant(task.status)}>{task.status}</Badge>
+              </div>
+              <span
+                className="text-center font-mono text-sm"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                {task.sub_task_count}
+              </span>
+              <div className="text-right">
+                <PriceTag amount={task.total_cost} size="sm" />
+              </div>
+              <span
+                className="text-right font-mono"
+                style={{ fontSize: 12, color: "var(--text-muted)" }}
+              >
+                {formatDuration(task.created_at, task.completed_at)}
+              </span>
             </div>
-            <span
-              className="text-center text-sm font-medium"
-              style={{ color: "var(--text-secondary)" }}
-            >
-              {task.sub_task_count}
-            </span>
-            <div className="text-right">
-              <PriceTag amount={task.total_cost} size="sm" />
-            </div>
-            <span
-              className="text-right text-caption"
-              style={{ color: "var(--text-tertiary)" }}
-            >
-              {formatDuration(task.created_at, task.completed_at)}
-            </span>
-          </div>
-        ))}
+          ))}
         </div>
       </div>
     </div>

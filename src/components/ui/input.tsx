@@ -1,4 +1,6 @@
-import { InputHTMLAttributes, TextareaHTMLAttributes } from "react";
+"use client";
+
+import { InputHTMLAttributes, TextareaHTMLAttributes, useState } from "react";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -6,25 +8,78 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   suffix?: string;
 }
 
-export function Input({ label, prefix, suffix, className = "", ...props }: InputProps) {
+const fieldBaseStyle = (focused: boolean): React.CSSProperties => ({
+  backgroundColor: "var(--bg-card)",
+  border: `1px solid ${focused ? "var(--accent-lime)" : "var(--border-light)"}`,
+  borderRadius: 8,
+  color: "var(--text-primary)",
+  padding: "12px 14px",
+  boxShadow: focused ? "0 0 0 3px var(--accent-lime-glow)" : "none",
+  transition: "border-color 150ms ease, box-shadow 150ms ease",
+  outline: "none",
+  width: "100%",
+});
+
+export function Input({
+  label,
+  prefix,
+  suffix,
+  className = "",
+  onFocus,
+  onBlur,
+  style,
+  ...props
+}: InputProps) {
+  const [focused, setFocused] = useState(false);
+
   return (
     <div className="w-full">
       {label && (
-        <label className="mb-2 block text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+        <label
+          className="mb-2 block text-sm font-medium"
+          style={{ color: "var(--text-secondary)" }}
+        >
           {label}
         </label>
       )}
-      <div className="relative flex items-center">
+      <div
+        className="flex items-center"
+        style={{ ...fieldBaseStyle(focused), padding: 0 }}
+      >
         {prefix && (
-          <span className="text-mono mr-1" style={{ color: "var(--text-tertiary)" }}>{prefix}</span>
+          <span
+            className="font-mono text-sm pl-3.5"
+            style={{ color: "var(--text-muted)" }}
+          >
+            {prefix}
+          </span>
         )}
         <input
-          className={`w-full bg-transparent py-3 text-body outline-none transition-colors duration-200 ${className}`}
-          style={{ borderBottom: "1px solid var(--border-medium)", color: "var(--text-primary)" }}
+          className={`w-full bg-transparent text-body outline-none ${className}`}
+          style={{
+            color: "var(--text-primary)",
+            padding: "12px 14px",
+            paddingLeft: prefix ? 8 : 14,
+            paddingRight: suffix ? 8 : 14,
+            ...style,
+          }}
+          onFocus={(e) => {
+            setFocused(true);
+            onFocus?.(e);
+          }}
+          onBlur={(e) => {
+            setFocused(false);
+            onBlur?.(e);
+          }}
           {...props}
         />
         {suffix && (
-          <span className="text-mono ml-2" style={{ color: "var(--text-tertiary)" }}>{suffix}</span>
+          <span
+            className="font-mono text-sm pr-3.5"
+            style={{ color: "var(--text-muted)" }}
+          >
+            {suffix}
+          </span>
         )}
       </div>
     </div>
@@ -35,18 +90,38 @@ interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
 }
 
-export function Textarea({ label, className = "", ...props }: TextareaProps) {
+export function Textarea({
+  label,
+  className = "",
+  onFocus,
+  onBlur,
+  style,
+  ...props
+}: TextareaProps) {
+  const [focused, setFocused] = useState(false);
+
   return (
     <div className="w-full">
       {label && (
-        <label className="mb-2 block text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+        <label
+          className="mb-2 block text-sm font-medium"
+          style={{ color: "var(--text-secondary)" }}
+        >
           {label}
         </label>
       )}
       <textarea
-        className={`w-full resize-none bg-transparent py-3 text-body outline-none transition-colors duration-200 ${className}`}
-        style={{ borderBottom: "1px solid var(--border-medium)", color: "var(--text-primary)" }}
+        className={`w-full resize-none text-body ${className}`}
+        style={{ ...fieldBaseStyle(focused), ...style }}
         rows={4}
+        onFocus={(e) => {
+          setFocused(true);
+          onFocus?.(e);
+        }}
+        onBlur={(e) => {
+          setFocused(false);
+          onBlur?.(e);
+        }}
         {...props}
       />
     </div>

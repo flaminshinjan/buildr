@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { PriceTag } from "@/components/ui/price-tag";
-import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface SubTask {
@@ -136,23 +135,31 @@ export default function HistoryPage() {
 
   if (tasks.length === 0) {
     return (
-      <Card hover={false}>
+      <div
+        style={{
+          textAlign: "center",
+          padding: "48px 24px",
+          backgroundColor: "var(--bg-card)",
+          border: "1px solid var(--border-light)",
+          borderRadius: 12,
+          color: "var(--text-tertiary)",
+        }}
+      >
+        <div style={{ fontSize: 32, marginBottom: 12 }}>&#x29D6;</div>
         <div
           style={{
-            textAlign: "center",
-            padding: "48px 24px",
-            color: "var(--text-tertiary)",
+            fontSize: 16,
+            fontWeight: 700,
+            marginBottom: 4,
+            color: "var(--text-primary)",
           }}
         >
-          <div style={{ fontSize: 32, marginBottom: 12 }}>&#x29D6;</div>
-          <div style={{ fontSize: 16, fontWeight: 500, marginBottom: 4 }}>
-            No tasks yet
-          </div>
-          <div style={{ fontSize: 14 }}>
-            Orchestrated tasks will appear here once you run them.
-          </div>
+          No tasks yet
         </div>
-      </Card>
+        <div style={{ fontSize: 14 }}>
+          Orchestrated tasks will appear here once you run them.
+        </div>
+      </div>
     );
   }
 
@@ -164,12 +171,15 @@ export default function HistoryPage() {
           display: "grid",
           gridTemplateColumns: "1fr 100px 90px 100px 90px 150px",
           gap: 16,
-          padding: "8px 20px",
-          fontSize: 12,
-          fontWeight: 500,
-          color: "var(--text-tertiary)",
+          padding: "12px 20px",
+          fontSize: 11,
+          fontWeight: 600,
+          color: "var(--text-muted)",
           textTransform: "uppercase",
-          letterSpacing: "0.05em",
+          letterSpacing: "0.1em",
+          backgroundColor: "var(--bg-elevated)",
+          border: "1px solid var(--border-light)",
+          borderRadius: 8,
         }}
       >
         <span>Task</span>
@@ -197,25 +207,25 @@ export default function HistoryPage() {
                 gap: 16,
                 alignItems: "center",
                 padding: "14px 20px",
-                borderRadius: isExpanded ? "12px 12px 0 0" : 12,
-                backgroundColor: isExpanded
-                  ? "var(--bg-primary)"
-                  : "var(--bg-primary)",
+                borderRadius: isExpanded ? "8px 8px 0 0" : 8,
+                backgroundColor: "var(--bg-card)",
                 border: "1px solid var(--border-light)",
                 borderBottom: isExpanded ? "none" : "1px solid var(--border-light)",
                 cursor: "pointer",
-                transition: "background-color 0.15s",
+                transition: "background-color 0.15s, border-color 0.15s",
                 fontSize: 14,
               }}
               onMouseEnter={(e) => {
                 if (!isExpanded) {
-                  (e.currentTarget as HTMLElement).style.backgroundColor =
-                    "var(--bg-secondary)";
+                  (e.currentTarget as HTMLElement).style.borderColor =
+                    "var(--border-medium)";
                 }
               }}
               onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.backgroundColor =
-                  "var(--bg-primary)";
+                if (!isExpanded) {
+                  (e.currentTarget as HTMLElement).style.borderColor =
+                    "var(--border-light)";
+                }
               }}
             >
               <div
@@ -229,7 +239,7 @@ export default function HistoryPage() {
                 <span
                   style={{
                     fontSize: 10,
-                    color: "var(--text-tertiary)",
+                    color: "var(--text-muted)",
                     transition: "transform 0.2s",
                     transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)",
                   }}
@@ -264,11 +274,23 @@ export default function HistoryPage() {
 
               <PriceTag amount={task.total_cost} size="sm" />
 
-              <span style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+              <span
+                style={{
+                  color: "var(--text-secondary)",
+                  fontSize: 13,
+                  fontFamily: "var(--font-mono, monospace)",
+                }}
+              >
                 {formatDuration(task.created_at, task.completed_at)}
               </span>
 
-              <span style={{ color: "var(--text-tertiary)", fontSize: 13 }}>
+              <span
+                style={{
+                  color: "var(--text-muted)",
+                  fontSize: 13,
+                  fontFamily: "var(--font-mono, monospace)",
+                }}
+              >
                 {formatTimestamp(task.created_at)}
               </span>
             </div>
@@ -279,8 +301,8 @@ export default function HistoryPage() {
                 style={{
                   border: "1px solid var(--border-light)",
                   borderTop: "none",
-                  borderRadius: "0 0 12px 12px",
-                  backgroundColor: "var(--bg-primary)",
+                  borderRadius: "0 0 8px 8px",
+                  backgroundColor: "var(--bg-elevated)",
                   padding: "20px 24px",
                 }}
               >
@@ -299,8 +321,8 @@ export default function HistoryPage() {
                           fontSize: 11,
                           fontWeight: 600,
                           textTransform: "uppercase",
-                          letterSpacing: "0.05em",
-                          color: "var(--text-tertiary)",
+                          letterSpacing: "0.1em",
+                          color: "var(--text-muted)",
                           marginBottom: 6,
                         }}
                       >
@@ -325,8 +347,8 @@ export default function HistoryPage() {
                             fontSize: 11,
                             fontWeight: 600,
                             textTransform: "uppercase",
-                            letterSpacing: "0.05em",
-                            color: "var(--text-tertiary)",
+                            letterSpacing: "0.1em",
+                            color: "var(--text-muted)",
                             marginBottom: 10,
                           }}
                         >
@@ -348,7 +370,7 @@ export default function HistoryPage() {
                                 gap: 12,
                                 padding: "12px 16px",
                                 borderRadius: 8,
-                                backgroundColor: "var(--bg-secondary)",
+                                backgroundColor: "var(--bg-card)",
                                 border: "1px solid var(--border-light)",
                               }}
                             >
@@ -365,6 +387,7 @@ export default function HistoryPage() {
                                   fontWeight: 600,
                                   color: "var(--text-secondary)",
                                   flexShrink: 0,
+                                  fontFamily: "var(--font-mono, monospace)",
                                 }}
                               >
                                 {i + 1}
@@ -389,7 +412,7 @@ export default function HistoryPage() {
                                   }}
                                 >
                                   {st.agent_name && (
-                                    <span style={{ color: "var(--accent-blue)" }}>
+                                    <span style={{ color: "var(--accent-lime)" }}>
                                       {st.agent_name}
                                     </span>
                                   )}
@@ -434,8 +457,8 @@ export default function HistoryPage() {
                             fontSize: 11,
                             fontWeight: 600,
                             textTransform: "uppercase",
-                            letterSpacing: "0.05em",
-                            color: "var(--text-tertiary)",
+                            letterSpacing: "0.1em",
+                            color: "var(--text-muted)",
                             marginBottom: 10,
                           }}
                         >
@@ -457,7 +480,7 @@ export default function HistoryPage() {
                                 justifyContent: "space-between",
                                 padding: "10px 16px",
                                 borderRadius: 8,
-                                backgroundColor: "var(--bg-secondary)",
+                                backgroundColor: "var(--bg-card)",
                                 border: "1px solid var(--border-light)",
                                 fontSize: 13,
                               }}
@@ -504,8 +527,8 @@ export default function HistoryPage() {
                             fontSize: 11,
                             fontWeight: 600,
                             textTransform: "uppercase",
-                            letterSpacing: "0.05em",
-                            color: "var(--text-tertiary)",
+                            letterSpacing: "0.1em",
+                            color: "var(--text-muted)",
                             marginBottom: 6,
                           }}
                         >
@@ -515,7 +538,7 @@ export default function HistoryPage() {
                           style={{
                             padding: "14px 16px",
                             borderRadius: 8,
-                            backgroundColor: "var(--bg-secondary)",
+                            backgroundColor: "var(--bg-card)",
                             border: "1px solid var(--border-light)",
                             fontSize: 14,
                             color: "var(--text-primary)",
@@ -540,21 +563,23 @@ export default function HistoryPage() {
                           display: "inline-flex",
                           alignItems: "center",
                           gap: 8,
-                          padding: "8px 16px",
-                          borderRadius: 8,
-                          backgroundColor: "var(--accent-blue)",
-                          color: "#fff",
+                          padding: "10px 20px",
+                          borderRadius: 9999,
+                          backgroundColor: "var(--accent-lime)",
+                          color: "var(--text-inverse)",
                           fontSize: 13,
-                          fontWeight: 500,
+                          fontWeight: 700,
                           border: "none",
                           cursor: "pointer",
-                          transition: "opacity 0.15s",
+                          transition: "background-color 0.15s",
                         }}
                         onMouseEnter={(e) => {
-                          (e.currentTarget as HTMLElement).style.opacity = "0.9";
+                          (e.currentTarget as HTMLElement).style.backgroundColor =
+                            "var(--accent-lime-bright)";
                         }}
                         onMouseLeave={(e) => {
-                          (e.currentTarget as HTMLElement).style.opacity = "1";
+                          (e.currentTarget as HTMLElement).style.backgroundColor =
+                            "var(--accent-lime)";
                         }}
                       >
                         <svg
@@ -563,7 +588,7 @@ export default function HistoryPage() {
                           viewBox="0 0 24 24"
                           fill="none"
                           stroke="currentColor"
-                          strokeWidth="2"
+                          strokeWidth="2.5"
                           strokeLinecap="round"
                           strokeLinejoin="round"
                         >

@@ -19,14 +19,17 @@ function truncateAddress(addr: string): string {
 
 function BaseDiamond() {
   return (
-    <svg
-      width="10"
-      height="10"
-      viewBox="0 0 10 10"
-      style={{ display: "inline-block", verticalAlign: "middle" }}
-    >
-      <circle cx="5" cy="5" r="5" fill="#0052FF" />
-    </svg>
+    <span
+      aria-hidden
+      style={{
+        display: "inline-block",
+        width: 8,
+        height: 8,
+        transform: "rotate(45deg)",
+        backgroundColor: "currentColor",
+        borderRadius: 1,
+      }}
+    />
   );
 }
 
@@ -34,19 +37,57 @@ function CopyIcon({ copied }: { copied: boolean }) {
   if (copied) {
     return (
       <svg
-        width="12"
-        height="12"
-        viewBox="0 0 12 12"
+        width="14"
+        height="14"
+        viewBox="0 0 14 14"
         fill="none"
-        stroke="#34D399"
+        stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
       >
-        <polyline points="2 6 5 9 10 3" />
+        <polyline points="2.5 7 5.5 10 11.5 3.5" />
       </svg>
     );
   }
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="4" y="4" width="8" height="8" rx="1.5" />
+      <path d="M2.5 10V3C2.5 2.448 2.948 2 3.5 2H10" />
+    </svg>
+  );
+}
+
+function ExternalLinkIcon() {
+  return (
+    <svg
+      width="11"
+      height="11"
+      viewBox="0 0 11 11"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ display: "inline-block", verticalAlign: "middle" }}
+    >
+      <path d="M4 2H2V9H9V7" />
+      <path d="M6 2H9V5" />
+      <path d="M5 6L9 2" />
+    </svg>
+  );
+}
+
+function ArrowUpIcon() {
   return (
     <svg
       width="12"
@@ -54,12 +95,12 @@ function CopyIcon({ copied }: { copied: boolean }) {
       viewBox="0 0 12 12"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.5"
+      strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <rect x="3" y="3" width="7" height="7" rx="1.5" />
-      <path d="M2 8.5V2.5C2 1.948 2.448 1.5 3 1.5H8" />
+      <path d="M6 9.5V2.5" />
+      <path d="M2.5 6L6 2.5L9.5 6" />
     </svg>
   );
 }
@@ -104,46 +145,50 @@ export function WalletWidget() {
     <>
       <div
         style={{
-          backgroundColor: "#1A1A1A",
+          backgroundColor: "var(--bg-card)",
           borderRadius: 12,
-          padding: "14px 14px 12px",
-          border: "1px solid rgba(255,255,255,0.06)",
-          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.02)",
+          padding: 16,
+          border: "1px solid var(--border-light)",
         }}
       >
-        {/* Header: Chain + status dot */}
+        {/* Chain pill */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            marginBottom: 10,
+            marginBottom: 12,
           }}
         >
           <span
             style={{
               display: "inline-flex",
               alignItems: "center",
-              gap: 5,
+              gap: 6,
               fontSize: 10,
-              fontWeight: 600,
-              color: "#8C8C8C",
-              letterSpacing: "0.04em",
+              fontWeight: 700,
+              color: "var(--accent-lime)",
+              letterSpacing: "0.06em",
               textTransform: "uppercase",
+              padding: "4px 10px",
+              borderRadius: 9999,
+              backgroundColor: "var(--accent-lime-faded)",
             }}
           >
             <BaseDiamond />
             Base
           </span>
           <span
+            aria-hidden
             style={{
               display: "inline-block",
               width: 6,
               height: 6,
               borderRadius: "50%",
-              backgroundColor: wallet !== null ? "#34D399" : "#525252",
+              backgroundColor:
+                wallet !== null ? "var(--accent-green)" : "var(--text-muted)",
               boxShadow:
-                wallet !== null ? "0 0 6px rgba(52,211,153,0.5)" : "none",
+                wallet !== null ? "0 0 6px rgba(74,222,128,0.6)" : "none",
             }}
           />
         </div>
@@ -159,12 +204,12 @@ export function WalletWidget() {
             gap: 6,
             background: "transparent",
             border: "none",
-            color: "#9A9A9A",
+            color: "var(--text-tertiary)",
             padding: 0,
             cursor: wallet?.wallet_address ? "pointer" : "default",
-            marginBottom: 8,
-            fontSize: 11,
-            fontFamily: "var(--font-mono, monospace)",
+            marginBottom: 10,
+            fontSize: 12,
+            fontFamily: "var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace)",
             letterSpacing: "0.01em",
           }}
           aria-label="Copy wallet address"
@@ -183,16 +228,17 @@ export function WalletWidget() {
             display: "flex",
             alignItems: "baseline",
             gap: 6,
-            marginBottom: 4,
+            marginBottom: 2,
           }}
         >
           <span
             style={{
               fontSize: 24,
               fontWeight: 700,
-              color: "#FFFFFF",
+              color: "var(--text-primary)",
               letterSpacing: "-0.02em",
               fontFeatureSettings: "'tnum'",
+              lineHeight: 1.1,
             }}
           >
             ${balanceStr || "0.00"}
@@ -200,17 +246,28 @@ export function WalletWidget() {
           {hasBalance && (
             <span
               style={{
-                fontSize: 12,
-                fontWeight: 600,
-                color: "#34D399",
+                display: "inline-flex",
+                alignItems: "center",
+                color: "var(--accent-green)",
               }}
+              aria-hidden
             >
-              &#x2191;
+              <ArrowUpIcon />
             </span>
           )}
-          <span style={{ fontSize: 11, color: "#6B6B6B", marginLeft: 2 }}>
-            USDC
-          </span>
+        </div>
+
+        <div
+          style={{
+            fontSize: 10,
+            fontWeight: 600,
+            color: "var(--text-muted)",
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            marginBottom: 12,
+          }}
+        >
+          USDC
         </div>
 
         {/* Basescan link */}
@@ -219,48 +276,62 @@ export function WalletWidget() {
             href={wallet.basescan_url}
             target="_blank"
             rel="noopener noreferrer"
+            className="wallet-basescan-link"
             style={{
-              display: "inline-block",
-              fontSize: 10,
-              color: "#6B8AFD",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 5,
+              fontSize: 11,
+              color: "var(--text-muted)",
               textDecoration: "none",
               letterSpacing: "0.02em",
-              marginBottom: 10,
+              marginBottom: 14,
+              transition: "color 150ms ease",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLAnchorElement).style.color =
+                "var(--accent-lime)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLAnchorElement).style.color =
+                "var(--text-muted)";
             }}
           >
-            View on Basescan &#x2197;
+            View on Basescan
+            <ExternalLinkIcon />
           </a>
         )}
 
-        {/* Request credits button */}
+        {/* Request credits — the WOW button */}
         <button
           type="button"
           onClick={() => setModalOpen(true)}
           style={{
             width: "100%",
-            marginTop: 4,
-            padding: "8px 10px",
-            borderRadius: 8,
-            border: "1px solid rgba(255,255,255,0.08)",
-            backgroundColor: "rgba(255,255,255,0.04)",
-            color: "#E0E0E0",
-            fontSize: 12,
-            fontWeight: 500,
+            padding: "12px 14px",
+            borderRadius: 9999,
+            border: "none",
+            backgroundColor: "var(--accent-lime)",
+            color: "var(--text-inverse)",
+            fontSize: 13,
+            fontWeight: 700,
+            letterSpacing: "-0.01em",
             cursor: "pointer",
-            transition: "background-color 150ms, color 150ms",
+            transition: "background-color 150ms ease, box-shadow 150ms ease, transform 150ms ease",
           }}
           onMouseEnter={(e) => {
             (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-              "rgba(255,255,255,0.08)";
-            (e.currentTarget as HTMLButtonElement).style.color = "#FFFFFF";
+              "var(--accent-lime-bright)";
+            (e.currentTarget as HTMLButtonElement).style.boxShadow =
+              "var(--shadow-glow)";
           }}
           onMouseLeave={(e) => {
             (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-              "rgba(255,255,255,0.04)";
-            (e.currentTarget as HTMLButtonElement).style.color = "#E0E0E0";
+              "var(--accent-lime)";
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = "none";
           }}
         >
-          + Request Credits
+          Request Credits
         </button>
       </div>
 

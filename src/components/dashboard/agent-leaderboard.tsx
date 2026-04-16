@@ -2,27 +2,33 @@ import { Agent } from "@/lib/schema";
 import { PriceTag } from "@/components/ui/price-tag";
 import { Badge } from "@/components/ui/badge";
 
-const rankStyles: Record<number, { bg: string; text: string; border: string }> = {
-  1: { bg: "#FFF8E1", text: "#B8860B", border: "#E6C547" },
-  2: { bg: "#F5F5F5", text: "#6B6B6B", border: "#C0C0C0" },
-  3: { bg: "#FFF0E6", text: "#A0522D", border: "#CD7F32" },
+const rankAccents: Record<number, string> = {
+  1: "#F4C542", // gold
+  2: "#C0C0C0", // silver
+  3: "#CD7F32", // bronze
 };
 
 export function AgentLeaderboard({ agents }: { agents: Agent[] }) {
   if (agents.length === 0) {
     return (
       <div
-        className="rounded-xl p-6"
         style={{
-          backgroundColor: "var(--bg-primary)",
+          backgroundColor: "var(--bg-card)",
           border: "1px solid var(--border-light)",
-          boxShadow: "var(--shadow-sm)",
+          borderRadius: 12,
+          padding: 24,
         }}
       >
-        <h3 className="text-card-title mb-4" style={{ color: "var(--text-primary)" }}>
+        <h3
+          className="text-card-title mb-4"
+          style={{ color: "var(--text-primary)", fontWeight: 700 }}
+        >
           Top Earners
         </h3>
-        <p className="py-8 text-center text-body" style={{ color: "var(--text-tertiary)" }}>
+        <p
+          className="py-8 text-center text-body"
+          style={{ color: "var(--text-tertiary)" }}
+        >
           No agents registered yet.
         </p>
       </div>
@@ -31,18 +37,21 @@ export function AgentLeaderboard({ agents }: { agents: Agent[] }) {
 
   return (
     <div
-      className="rounded-xl p-6"
       style={{
-        backgroundColor: "var(--bg-primary)",
+        backgroundColor: "var(--bg-card)",
         border: "1px solid var(--border-light)",
-        boxShadow: "var(--shadow-sm)",
+        borderRadius: 12,
+        padding: 24,
       }}
     >
       <div className="mb-6 flex items-center justify-between">
-        <h3 className="text-card-title" style={{ color: "var(--text-primary)" }}>
+        <h3
+          className="text-card-title"
+          style={{ color: "var(--text-primary)", fontWeight: 700 }}
+        >
           Top Earners
         </h3>
-        <span className="text-caption" style={{ color: "var(--text-tertiary)" }}>
+        <span className="text-caption" style={{ color: "var(--text-muted)" }}>
           {agents.length} agents
         </span>
       </div>
@@ -51,24 +60,26 @@ export function AgentLeaderboard({ agents }: { agents: Agent[] }) {
         {agents.map((agent, i) => {
           const rank = i + 1;
           const isTopThree = rank <= 3;
-          const style = rankStyles[rank];
+          const accent = rankAccents[rank];
 
           return (
             <div
               key={agent.id}
-              className="flex items-center gap-4 rounded-lg px-4 py-3"
+              className="flex items-center gap-4 px-4 py-3"
               style={{
-                backgroundColor: isTopThree ? style.bg : "var(--bg-secondary)",
-                border: isTopThree
-                  ? `1px solid ${style.border}`
-                  : "1px solid transparent",
+                backgroundColor: "var(--bg-elevated)",
+                border: "1px solid var(--border-light)",
+                borderRadius: 8,
+                borderLeft: isTopThree ? `3px solid ${accent}` : "1px solid var(--border-light)",
               }}
             >
               <span
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold"
                 style={{
-                  backgroundColor: isTopThree ? style.border : "var(--bg-tertiary)",
-                  color: isTopThree ? "#FFFFFF" : "var(--text-tertiary)",
+                  backgroundColor: "var(--bg-tertiary)",
+                  color: isTopThree ? accent : "var(--text-tertiary)",
+                  border: isTopThree ? `1px solid ${accent}40` : "1px solid var(--border-light)",
+                  fontVariantNumeric: "tabular-nums",
                 }}
               >
                 {rank}
@@ -77,7 +88,7 @@ export function AgentLeaderboard({ agents }: { agents: Agent[] }) {
                 <div className="flex items-center gap-2">
                   <p
                     className="truncate text-sm font-medium"
-                    style={{ color: isTopThree ? style.text : "var(--text-primary)" }}
+                    style={{ color: "var(--text-primary)" }}
                   >
                     {agent.name}
                   </p>
@@ -93,7 +104,10 @@ export function AgentLeaderboard({ agents }: { agents: Agent[] }) {
                     {agent.status}
                   </Badge>
                 </div>
-                <p className="text-caption" style={{ color: "var(--text-tertiary)" }}>
+                <p
+                  className="text-caption"
+                  style={{ color: "var(--text-muted)" }}
+                >
                   {agent.total_jobs} jobs &middot; {agent.rating.toFixed(1)} rating &middot; {agent.category}
                 </p>
               </div>

@@ -13,30 +13,36 @@ export const dynamic = "force-dynamic";
 function SectionDivider({ label }: { label: string }) {
   return (
     <div className="mb-6 mt-3 flex items-center gap-3">
+      <div className="flex items-center gap-2">
+        <span
+          aria-hidden="true"
+          style={{
+            display: "inline-block",
+            width: 4,
+            height: 12,
+            backgroundColor: "var(--accent-lime)",
+            borderRadius: 2,
+            boxShadow: "0 0 6px var(--accent-lime-glow)",
+          }}
+        />
+        <p
+          style={{
+            fontSize: 11,
+            fontWeight: 600,
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            color: "var(--text-muted)",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {label}
+        </p>
+      </div>
       <div
         className="flex-1"
         style={{
           height: 1,
-          background: "linear-gradient(90deg, var(--border-light), transparent)",
-        }}
-      />
-      <p
-        style={{
-          fontSize: 11,
-          fontWeight: 600,
-          letterSpacing: "0.08em",
-          textTransform: "uppercase",
-          color: "var(--text-tertiary)",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {label}
-      </p>
-      <div
-        className="flex-1"
-        style={{
-          height: 1,
-          background: "linear-gradient(90deg, transparent, var(--border-light))",
+          backgroundColor: "var(--border-light)",
         }}
       />
     </div>
@@ -167,36 +173,84 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8 pb-4">
       <section
-        className="relative overflow-hidden rounded-2xl border px-6 py-7 sm:px-8"
         style={{
-          background:
-            "radial-gradient(140% 120% at 10% 0%, rgba(74, 111, 165, 0.14), transparent 55%), radial-gradient(130% 130% at 100% 100%, rgba(74, 124, 89, 0.12), transparent 50%), var(--bg-primary)",
-          borderColor: "var(--border-light)",
-          boxShadow: "var(--shadow-sm)",
+          backgroundColor: "var(--bg-card)",
+          border: "1px solid var(--border-light)",
+          borderRadius: 12,
+          padding: "28px 32px",
         }}
       >
-        <div className="pointer-events-none absolute -right-8 -top-8 h-36 w-36 rounded-full opacity-60 blur-2xl" style={{ backgroundColor: "var(--accent-blue-light)" }} />
-        <div className="pointer-events-none absolute -bottom-8 -left-8 h-28 w-28 rounded-full opacity-60 blur-2xl" style={{ backgroundColor: "var(--accent-green-light)" }} />
-        <div className="relative z-10 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.14em]" style={{ color: "var(--text-tertiary)" }}>
-              Command Center
-            </p>
-            <h1 className="mt-2 text-3xl font-medium tracking-tight sm:text-4xl" style={{ color: "var(--text-primary)" }}>
+            <div className="flex items-center gap-2">
+              <span
+                aria-hidden="true"
+                style={{
+                  display: "inline-block",
+                  width: 4,
+                  height: 12,
+                  backgroundColor: "var(--accent-lime)",
+                  borderRadius: 2,
+                  boxShadow: "0 0 6px var(--accent-lime-glow)",
+                }}
+              />
+              <p
+                style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  letterSpacing: "0.14em",
+                  textTransform: "uppercase",
+                  color: "var(--text-muted)",
+                }}
+              >
+                Command Center
+              </p>
+            </div>
+            <h1
+              className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl"
+              style={{ color: "var(--text-primary)" }}
+            >
               Overview
             </h1>
-            <p className="mt-2 max-w-2xl text-sm sm:text-base" style={{ color: "var(--text-secondary)" }}>
+            <p
+              className="mt-2 max-w-2xl text-sm sm:text-base"
+              style={{ color: "var(--text-secondary)" }}
+            >
               Monitor agent utilization, transaction flow, and orchestration performance in real time.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full border px-3 py-1 text-xs font-medium" style={{ borderColor: "var(--border-light)", color: "var(--text-secondary)", backgroundColor: "var(--bg-secondary)" }}>
-              {onlineAgents}/{totalAgents} online
+            <span
+              className="rounded-full px-3 py-1 text-xs font-medium"
+              style={{
+                border: "1px solid var(--border-light)",
+                color: "var(--text-secondary)",
+                backgroundColor: "var(--bg-elevated)",
+              }}
+            >
+              <span style={{ color: "var(--accent-lime)", fontFamily: "var(--font-mono, monospace)" }}>
+                {onlineAgents}
+              </span>
+              /{totalAgents} online
             </span>
-            <span className="rounded-full border px-3 py-1 text-xs font-medium" style={{ borderColor: "var(--border-light)", color: "var(--text-secondary)", backgroundColor: "var(--bg-secondary)" }}>
-              {tasksCompleted} tasks completed
+            <span
+              className="rounded-full px-3 py-1 text-xs font-medium"
+              style={{
+                border: "1px solid var(--border-light)",
+                color: "var(--text-secondary)",
+                backgroundColor: "var(--bg-elevated)",
+              }}
+            >
+              <span className="font-mono">{tasksCompleted}</span> tasks completed
             </span>
-            <span className="rounded-full border px-3 py-1 text-xs font-medium" style={{ borderColor: "var(--border-light)", color: "var(--text-secondary)", backgroundColor: "var(--bg-secondary)" }}>
+            <span
+              className="rounded-full px-3 py-1 text-xs font-medium"
+              style={{
+                border: "1px solid var(--border-light)",
+                color: "var(--text-muted)",
+                backgroundColor: "var(--bg-elevated)",
+              }}
+            >
               Updated {now}
             </span>
           </div>

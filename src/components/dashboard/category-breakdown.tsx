@@ -27,14 +27,17 @@ export function CategoryBreakdown({ categories }: { categories: CategoryData[] }
   if (totalCount === 0) {
     return (
       <div
-        className="rounded-xl p-6"
         style={{
-          backgroundColor: "var(--bg-primary)",
+          backgroundColor: "var(--bg-card)",
           border: "1px solid var(--border-light)",
-          boxShadow: "var(--shadow-sm)",
+          borderRadius: 12,
+          padding: 24,
         }}
       >
-        <h3 className="text-card-title mb-4" style={{ color: "var(--text-primary)" }}>
+        <h3
+          className="text-card-title mb-4"
+          style={{ color: "var(--text-primary)", fontWeight: 700 }}
+        >
           Category Breakdown
         </h3>
         <p className="text-body" style={{ color: "var(--text-tertiary)" }}>
@@ -48,21 +51,24 @@ export function CategoryBreakdown({ categories }: { categories: CategoryData[] }
 
   return (
     <div
-      className="rounded-xl p-6"
       style={{
-        backgroundColor: "var(--bg-primary)",
+        backgroundColor: "var(--bg-card)",
         border: "1px solid var(--border-light)",
-        boxShadow: "var(--shadow-sm)",
+        borderRadius: 12,
+        padding: 24,
       }}
     >
       {/* Header with total count */}
       <div className="mb-6 flex items-baseline justify-between">
-        <h3 className="text-card-title" style={{ color: "var(--text-primary)" }}>
+        <h3
+          className="text-card-title"
+          style={{ color: "var(--text-primary)", fontWeight: 700 }}
+        >
           Category Breakdown
         </h3>
         <span
           className="text-xs font-medium"
-          style={{ color: "var(--text-tertiary)" }}
+          style={{ color: "var(--text-muted)" }}
         >
           {totalCount} categor{totalCount === 1 ? "y" : "ies"}
         </span>
@@ -79,7 +85,11 @@ export function CategoryBreakdown({ categories }: { categories: CategoryData[] }
                 <div className="flex items-center gap-3">
                   <span
                     className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium"
-                    style={{ backgroundColor: colors.bg, color: colors.bar }}
+                    style={{
+                      backgroundColor: colors.bg,
+                      color: colors.bar,
+                      border: `1px solid ${colors.bar}22`,
+                    }}
                   >
                     {cat.category}
                   </span>
@@ -90,8 +100,9 @@ export function CategoryBreakdown({ categories }: { categories: CategoryData[] }
                       minWidth: 22,
                       height: 22,
                       padding: "0 6px",
-                      backgroundColor: "var(--bg-tertiary)",
+                      backgroundColor: "var(--bg-elevated)",
                       color: "var(--text-secondary)",
+                      border: "1px solid var(--border-light)",
                     }}
                   >
                     {cat.agent_count}
@@ -99,7 +110,7 @@ export function CategoryBreakdown({ categories }: { categories: CategoryData[] }
                 </div>
                 <PriceTag amount={cat.total_earned} size="sm" />
               </div>
-              {/* Bar - taller at 6px */}
+              {/* Bar */}
               <div
                 className="w-full overflow-hidden rounded-full"
                 style={{ height: 6, backgroundColor: "var(--bg-tertiary)" }}

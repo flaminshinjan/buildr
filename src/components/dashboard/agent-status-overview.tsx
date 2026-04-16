@@ -15,14 +15,17 @@ export function AgentStatusOverview({ counts }: { counts: StatusCounts }) {
 
   return (
     <div
-      className="rounded-xl p-6"
       style={{
-        backgroundColor: "var(--bg-primary)",
+        backgroundColor: "var(--bg-card)",
         border: "1px solid var(--border-light)",
-        boxShadow: "var(--shadow-sm)",
+        borderRadius: 12,
+        padding: 24,
       }}
     >
-      <h3 className="text-card-title mb-6" style={{ color: "var(--text-primary)" }}>
+      <h3
+        className="text-card-title mb-6"
+        style={{ color: "var(--text-primary)", fontWeight: 700 }}
+      >
         Agent Status
       </h3>
 
@@ -32,16 +35,15 @@ export function AgentStatusOverview({ counts }: { counts: StatusCounts }) {
         </p>
       ) : (
         <>
-          {/* Segmented bar - taller with rounded segment edges */}
+          {/* Segmented bar */}
           <div
             className="mb-6 flex w-full overflow-hidden rounded-full"
-            style={{ height: 24, backgroundColor: "var(--bg-tertiary)" }}
+            style={{ height: 20, backgroundColor: "var(--bg-tertiary)" }}
           >
             {segments.map((seg, i) => {
               const pct = total > 0 ? (seg.count / total) * 100 : 0;
               if (pct === 0) return null;
 
-              // Determine border-radius for rounded segment edges
               const isFirst = segments.slice(0, i).every((s) => s.count === 0);
               const isLast = segments.slice(i + 1).every((s) => s.count === 0);
 
@@ -65,34 +67,51 @@ export function AgentStatusOverview({ counts }: { counts: StatusCounts }) {
             })}
           </div>
 
-          {/* Legend - compact with large numbers and colored dots */}
-          <div className="flex items-center justify-between">
+          {/* Legend */}
+          <div className="flex items-start justify-between">
             {segments.map((seg) => {
               const pct = total > 0 ? ((seg.count / total) * 100).toFixed(0) : "0";
               return (
-                <div key={seg.label} className="flex flex-col items-center gap-1">
+                <div
+                  key={seg.label}
+                  className="flex flex-col gap-2"
+                  style={{ minWidth: 60 }}
+                >
                   <div className="flex items-center gap-2">
                     <span
-                      className="inline-block h-2.5 w-2.5 rounded-full"
-                      style={{ backgroundColor: seg.color }}
+                      className="inline-block rounded-full"
+                      style={{
+                        width: 8,
+                        height: 8,
+                        backgroundColor: seg.color,
+                      }}
                     />
                     <span
-                      className="text-xs font-medium"
-                      style={{ color: "var(--text-tertiary)" }}
+                      style={{
+                        fontSize: 11,
+                        letterSpacing: "0.1em",
+                        textTransform: "uppercase",
+                        color: "var(--text-tertiary)",
+                        fontWeight: 500,
+                      }}
                     >
                       {seg.label}
                     </span>
                   </div>
-                  <div className="flex items-baseline gap-1">
+                  <div className="flex items-baseline gap-1.5">
                     <span
-                      className="text-xl font-semibold"
-                      style={{ color: "var(--text-primary)" }}
+                      style={{
+                        fontSize: 24,
+                        fontWeight: 700,
+                        color: "var(--text-primary)",
+                        fontVariantNumeric: "tabular-nums",
+                      }}
                     >
                       {seg.count}
                     </span>
                     <span
                       className="text-xs"
-                      style={{ color: "var(--text-tertiary)" }}
+                      style={{ color: "var(--text-muted)" }}
                     >
                       {pct}%
                     </span>

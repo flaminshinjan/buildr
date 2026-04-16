@@ -84,7 +84,7 @@ function LoadingSkeleton() {
               style={{
                 padding: 24,
                 borderRadius: 12,
-                backgroundColor: "var(--bg-primary)",
+                backgroundColor: "var(--bg-card)",
                 border: "1px solid var(--border-light)",
               }}
             >
@@ -106,7 +106,7 @@ function LoadingSkeleton() {
           style={{
             padding: 24,
             borderRadius: 12,
-            backgroundColor: "var(--bg-primary)",
+            backgroundColor: "var(--bg-card)",
             border: "1px solid var(--border-light)",
           }}
         >
@@ -180,11 +180,21 @@ export default function PlaygroundPage({
         style={{
           textAlign: "center",
           padding: "64px 24px",
+          backgroundColor: "var(--bg-card)",
+          border: "1px solid var(--border-light)",
+          borderRadius: 12,
           color: "var(--text-tertiary)",
         }}
       >
         <div style={{ fontSize: 32, marginBottom: 12 }}>&#x26A0;</div>
-        <div style={{ fontSize: 16, fontWeight: 500, marginBottom: 4 }}>
+        <div
+          style={{
+            fontSize: 16,
+            fontWeight: 700,
+            marginBottom: 4,
+            color: "var(--text-primary)",
+          }}
+        >
           Task not found
         </div>
         <div style={{ fontSize: 14, marginBottom: 20 }}>
@@ -194,12 +204,12 @@ export default function PlaygroundPage({
           type="button"
           onClick={() => router.push("/dashboard/history")}
           style={{
-            padding: "8px 20px",
-            borderRadius: 8,
-            backgroundColor: "var(--accent-blue)",
-            color: "#fff",
+            padding: "10px 20px",
+            borderRadius: 9999,
+            backgroundColor: "var(--accent-lime)",
+            color: "var(--text-inverse)",
             fontSize: 14,
-            fontWeight: 500,
+            fontWeight: 700,
             border: "none",
             cursor: "pointer",
           }}
@@ -220,7 +230,7 @@ export default function PlaygroundPage({
             .filter((st) => st.result)
             .map((st, i) => {
               const catColor = CATEGORY_COLORS[st.category] || {
-                bg: "var(--bg-tertiary)",
+                bg: "var(--bg-elevated)",
                 text: "var(--text-secondary)",
               };
               return (
@@ -228,11 +238,18 @@ export default function PlaygroundPage({
                   key={st.id || i}
                   style={{
                     borderRadius: 12,
-                    backgroundColor: "var(--bg-primary)",
+                    backgroundColor: "var(--bg-card)",
                     border: "1px solid var(--border-light)",
                     overflow: "hidden",
                   }}
                 >
+                  {/* Category accent strip */}
+                  <div
+                    style={{
+                      height: 2,
+                      backgroundColor: catColor.text,
+                    }}
+                  />
                   {/* Card header */}
                   <div
                     style={{
@@ -247,7 +264,7 @@ export default function PlaygroundPage({
                     <span
                       style={{
                         fontSize: 15,
-                        fontWeight: 600,
+                        fontWeight: 700,
                         color: "var(--text-primary)",
                       }}
                     >
@@ -261,8 +278,9 @@ export default function PlaygroundPage({
                         borderRadius: 9999,
                         fontSize: 11,
                         fontWeight: 600,
-                        backgroundColor: catColor.bg,
+                        backgroundColor: `${catColor.text}1A`,
                         color: catColor.text,
+                        border: `1px solid ${catColor.text}33`,
                       }}
                     >
                       {st.category}
@@ -297,17 +315,17 @@ export default function PlaygroundPage({
             style={{
               marginTop: 24,
               borderRadius: 12,
-              backgroundColor: "var(--bg-primary)",
-              border: "1px solid var(--accent-green)",
+              backgroundColor: "var(--bg-card)",
+              border: "1px solid var(--accent-lime)",
               overflow: "hidden",
             }}
           >
             <div
               style={{
                 padding: "16px 20px",
-                borderBottom: "1px solid var(--accent-green)",
+                borderBottom: "1px solid var(--border-light)",
                 background:
-                  "linear-gradient(135deg, var(--accent-green-light) 0%, rgba(74,124,89,0.08) 100%)",
+                  "linear-gradient(135deg, var(--accent-lime-faded) 0%, transparent 100%)",
               }}
             >
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -316,8 +334,8 @@ export default function PlaygroundPage({
                     width: 24,
                     height: 24,
                     borderRadius: "50%",
-                    backgroundColor: "var(--accent-green)",
-                    color: "#fff",
+                    backgroundColor: "var(--accent-lime)",
+                    color: "var(--text-inverse)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -330,8 +348,8 @@ export default function PlaygroundPage({
                 <span
                   style={{
                     fontSize: 16,
-                    fontWeight: 600,
-                    color: "var(--accent-green)",
+                    fontWeight: 700,
+                    color: "var(--text-primary)",
                   }}
                 >
                   Final Assembled Result
@@ -362,7 +380,7 @@ export default function PlaygroundPage({
         <div
           style={{
             borderRadius: 12,
-            backgroundColor: "var(--bg-primary)",
+            backgroundColor: "var(--bg-card)",
             border: "1px solid var(--border-light)",
             padding: 20,
           }}
@@ -372,8 +390,8 @@ export default function PlaygroundPage({
               fontSize: 11,
               fontWeight: 600,
               textTransform: "uppercase",
-              letterSpacing: "0.05em",
-              color: "var(--text-tertiary)",
+              letterSpacing: "0.1em",
+              color: "var(--text-muted)",
               marginBottom: 10,
             }}
           >
@@ -394,17 +412,34 @@ export default function PlaygroundPage({
               {task.status}
             </Badge>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13 }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 6,
+              fontSize: 13,
+            }}
+          >
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <span style={{ color: "var(--text-muted)" }}>Created</span>
-              <span style={{ color: "var(--text-secondary)" }}>
+              <span
+                style={{
+                  color: "var(--text-secondary)",
+                  fontFamily: "var(--font-mono, monospace)",
+                }}
+              >
                 {formatTimestamp(task.created_at)}
               </span>
             </div>
             {task.completed_at && (
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <span style={{ color: "var(--text-muted)" }}>Completed</span>
-                <span style={{ color: "var(--text-secondary)" }}>
+                <span
+                  style={{
+                    color: "var(--text-secondary)",
+                    fontFamily: "var(--font-mono, monospace)",
+                  }}
+                >
                   {formatTimestamp(task.completed_at)}
                 </span>
               </div>
@@ -416,7 +451,7 @@ export default function PlaygroundPage({
         <div
           style={{
             borderRadius: 12,
-            backgroundColor: "var(--bg-primary)",
+            backgroundColor: "var(--bg-card)",
             border: "1px solid var(--border-light)",
             padding: 20,
           }}
@@ -426,8 +461,8 @@ export default function PlaygroundPage({
               fontSize: 11,
               fontWeight: 600,
               textTransform: "uppercase",
-              letterSpacing: "0.05em",
-              color: "var(--text-tertiary)",
+              letterSpacing: "0.1em",
+              color: "var(--text-muted)",
               marginBottom: 14,
             }}
           >
@@ -442,7 +477,7 @@ export default function PlaygroundPage({
                   style={{
                     padding: "10px 14px",
                     borderRadius: 8,
-                    backgroundColor: "var(--bg-secondary)",
+                    backgroundColor: "var(--bg-elevated)",
                     border: "1px solid var(--border-light)",
                   }}
                 >
@@ -515,7 +550,7 @@ export default function PlaygroundPage({
                         <span
                           style={{
                             fontFamily: "var(--font-mono, monospace)",
-                            color: "var(--accent-green)",
+                            color: "var(--accent-lime)",
                             fontWeight: 500,
                           }}
                           title={tx.tx_hash}
@@ -529,18 +564,26 @@ export default function PlaygroundPage({
                           style={{
                             display: "inline-flex",
                             alignItems: "center",
-                            gap: 3,
-                            padding: "2px 8px",
-                            borderRadius: 9999,
-                            backgroundColor: "var(--accent-green-light)",
-                            color: "var(--accent-green)",
-                            border: "1px solid var(--accent-green)",
+                            gap: 4,
+                            color: "var(--accent-lime)",
+                            textDecoration: "underline",
                             fontWeight: 500,
-                            textDecoration: "none",
-                            fontSize: 10,
+                            fontSize: 11,
                           }}
                         >
-                          View on Basescan &#x2197;
+                          View on Basescan
+                          <svg
+                            width="10"
+                            height="10"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M7 17L17 7M7 7h10v10" />
+                          </svg>
                         </a>
                       </>
                     ) : (
@@ -576,14 +619,30 @@ export default function PlaygroundPage({
               >
                 <span
                   style={{
-                    fontSize: 14,
+                    fontSize: 11,
                     fontWeight: 600,
-                    color: "var(--text-primary)",
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    color: "var(--text-muted)",
                   }}
                 >
                   Total
                 </span>
-                <PriceTag amount={task.total_cost} size="md" />
+                <span
+                  className="font-mono"
+                  style={{
+                    fontSize: 18,
+                    fontWeight: 700,
+                    color: "var(--accent-lime)",
+                    textShadow: "0 0 12px rgba(203, 255, 59, 0.4)",
+                  }}
+                >
+                  $
+                  {task.total_cost < 0.01
+                    ? task.total_cost.toFixed(4)
+                    : task.total_cost.toFixed(3)}{" "}
+                  USDC
+                </span>
               </div>
 
               <div
@@ -615,7 +674,7 @@ export default function PlaygroundPage({
         <div
           style={{
             borderRadius: 12,
-            backgroundColor: "var(--bg-primary)",
+            backgroundColor: "var(--bg-card)",
             border: "1px solid var(--border-light)",
             padding: 20,
             display: "flex",
@@ -629,10 +688,10 @@ export default function PlaygroundPage({
             style={{
               width: "100%",
               padding: "10px 16px",
-              borderRadius: 8,
-              backgroundColor: copied ? "var(--accent-green-light)" : "var(--bg-secondary)",
-              border: `1px solid ${copied ? "var(--accent-green)" : "var(--border-light)"}`,
-              color: copied ? "var(--accent-green)" : "var(--text-secondary)",
+              borderRadius: 9999,
+              backgroundColor: "transparent",
+              border: `1px solid ${copied ? "var(--accent-lime)" : "var(--border-medium)"}`,
+              color: copied ? "var(--accent-lime)" : "var(--text-secondary)",
               fontSize: 13,
               fontWeight: 500,
               cursor: "pointer",
@@ -647,14 +706,22 @@ export default function PlaygroundPage({
             style={{
               width: "100%",
               padding: "10px 16px",
-              borderRadius: 8,
-              backgroundColor: "var(--accent-blue)",
+              borderRadius: 9999,
+              backgroundColor: "var(--accent-lime)",
               border: "none",
-              color: "#fff",
+              color: "var(--text-inverse)",
               fontSize: 13,
-              fontWeight: 500,
+              fontWeight: 700,
               cursor: "pointer",
-              transition: "all 0.15s",
+              transition: "background-color 0.15s",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.backgroundColor =
+                "var(--accent-lime-bright)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.backgroundColor =
+                "var(--accent-lime)";
             }}
           >
             Run Again
@@ -665,9 +732,9 @@ export default function PlaygroundPage({
             style={{
               width: "100%",
               padding: "10px 16px",
-              borderRadius: 8,
-              backgroundColor: "var(--bg-secondary)",
-              border: "1px solid var(--border-light)",
+              borderRadius: 9999,
+              backgroundColor: "transparent",
+              border: "1px solid var(--border-medium)",
               color: "var(--text-secondary)",
               fontSize: 13,
               fontWeight: 500,

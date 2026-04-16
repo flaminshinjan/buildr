@@ -46,17 +46,23 @@ export function TransactionFeed({ transactions }: { transactions: FeedTransactio
   if (transactions.length === 0) {
     return (
       <div
-        className="rounded-xl p-6"
         style={{
-          backgroundColor: "var(--bg-primary)",
+          backgroundColor: "var(--bg-card)",
           border: "1px solid var(--border-light)",
-          boxShadow: "var(--shadow-sm)",
+          borderRadius: 12,
+          padding: 24,
         }}
       >
-        <h3 className="text-card-title mb-4" style={{ color: "var(--text-primary)" }}>
+        <h3
+          className="text-card-title mb-4"
+          style={{ color: "var(--text-primary)", fontWeight: 700 }}
+        >
           Recent Transactions
         </h3>
-        <p className="py-8 text-center text-body" style={{ color: "var(--text-tertiary)" }}>
+        <p
+          className="py-8 text-center text-body"
+          style={{ color: "var(--text-tertiary)" }}
+        >
           No transactions yet. Run a task to see activity.
         </p>
       </div>
@@ -65,18 +71,21 @@ export function TransactionFeed({ transactions }: { transactions: FeedTransactio
 
   return (
     <div
-      className="rounded-xl p-6"
       style={{
-        backgroundColor: "var(--bg-primary)",
+        backgroundColor: "var(--bg-card)",
         border: "1px solid var(--border-light)",
-        boxShadow: "var(--shadow-sm)",
+        borderRadius: 12,
+        padding: 24,
       }}
     >
       <div className="mb-6 flex items-center justify-between">
-        <h3 className="text-card-title" style={{ color: "var(--text-primary)" }}>
+        <h3
+          className="text-card-title"
+          style={{ color: "var(--text-primary)", fontWeight: 700 }}
+        >
           Recent Transactions
         </h3>
-        <span className="text-caption" style={{ color: "var(--text-tertiary)" }}>
+        <span className="text-caption" style={{ color: "var(--text-muted)" }}>
           Last {transactions.length}
         </span>
       </div>
@@ -91,16 +100,20 @@ export function TransactionFeed({ transactions }: { transactions: FeedTransactio
           return (
             <div
               key={tx.id}
-              className="rounded-lg px-4 py-3"
+              className="px-4 py-3"
               style={{
-                backgroundColor: "var(--bg-secondary)",
-                border: "1px solid transparent",
+                backgroundColor: "var(--bg-elevated)",
+                border: "1px solid var(--border-light)",
+                borderRadius: 8,
               }}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <p className="truncate text-sm font-medium" style={{ color: "var(--text-primary)" }}>
+                    <p
+                      className="truncate font-mono text-sm font-medium"
+                      style={{ color: "var(--text-primary)" }}
+                    >
                       {tx.buyer_name || "Orchestrator"} &rarr; {tx.seller_name || "Agent"}
                     </p>
                     <Badge variant={statusVariant(tx.status)}>{tx.status}</Badge>
@@ -114,11 +127,17 @@ export function TransactionFeed({ transactions }: { transactions: FeedTransactio
                     </p>
                   )}
                   <div className="mt-1 flex items-center gap-3">
-                    <span className="text-caption" style={{ color: "var(--text-muted)" }}>
+                    <span
+                      className="text-caption"
+                      style={{ color: "var(--text-muted)" }}
+                    >
                       {timeAgo(tx.created_at)}
                     </span>
                     {negotiated && (
-                      <span className="text-caption" style={{ color: "var(--text-muted)" }}>
+                      <span
+                        className="font-mono text-caption"
+                        style={{ color: "var(--text-muted)" }}
+                      >
                         negotiated ${tx.negotiated_from!.toFixed(4)} &rarr; ${tx.negotiated_to!.toFixed(4)}
                       </span>
                     )}

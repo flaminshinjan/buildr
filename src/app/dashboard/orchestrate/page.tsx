@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { TaskInput } from "@/components/orchestration/task-input";
 import { ExecutionTimeline } from "@/components/orchestration/execution-timeline";
 import { CostEstimator } from "@/components/orchestration/cost-estimator";
-import { OrchestrationEvent } from "@/lib/schema";
+import { useTaskStore } from "@/lib/task-store";
 
 interface TaskTemplate {
   title: string;
@@ -62,10 +62,26 @@ const TASK_TEMPLATES: TaskTemplate[] = [
 export default function OrchestratePage() {
   const router = useRouter();
   const [taskInput, setTaskInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [events, setEvents] = useState<OrchestrationEvent[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
-  const [completedTaskId, setCompletedTaskId] = useState<string | null>(null);
+
+  // Zustand store selectors — subscribe to the background task state
+  const activeRunId = useTaskStore((s) => s.activeRunId);
+  const runs = useTaskStore((s) => s.runs);
+  const startRun = useTaskStore((s) => s.startRun);
+  const setActiveRunId = useTaskStore((s) => s.setActiveRunId);
+
+  const activeRun = activeRunId ? runs[activeRunId] : null;
+  const loading = activeRun?.status === "running";
+  const events = activeRun?.events ?? [];
+  const completedTaskId =
+    activeRun?.status === "completed" ? activeRun.taskId ?? null : null;
+
+  // Detect any OTHER running tasks (not the one currently focused)
+  const otherRunning = useMemo(() => {
+    return Object.values(runs).filter(
+      (r) => r.status === "running" && r.localId !== activeRunId
+    );
+  }, [runs, activeRunId]);
 
   const handleTemplateClick = useCallback(
     (template: TaskTemplate) => {
@@ -77,79 +93,99 @@ export default function OrchestratePage() {
     [loading]
   );
 
-  async function handleSubmit() {
+  function handleSubmit() {
     if (!taskInput.trim()) return;
-    setLoading(true);
-    setEvents([]);
-
-    try {
-      const res = await fetch("/api/orchestrate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_input: taskInput }),
-      });
-
-      if (!res.body) {
-        setLoading(false);
-        return;
-      }
-
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n");
-        buffer = lines.pop() || "";
-
-        for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            try {
-              const event = JSON.parse(line.slice(6)) as OrchestrationEvent;
-              setEvents((prev) => [...prev, event]);
-            } catch {
-              // Skip malformed events
-            }
-          }
-        }
-      }
-    } catch (err) {
-      setEvents((prev) => [
-        ...prev,
-        {
-          type: "error",
-          timestamp: new Date().toISOString(),
-          data: { message: err instanceof Error ? err.message : "Failed to connect" },
-        },
-      ]);
-    } finally {
-      setLoading(false);
-      // Check for completion event and extract task_id
-      setEvents((prev) => {
-        const completionEvent = prev.find((e) => e.type === "completion");
-        if (completionEvent?.data?.task_id) {
-          setCompletedTaskId(completionEvent.data.task_id as string);
-        }
-        return prev;
-      });
-    }
+    startRun(taskInput);
   }
 
   return (
-    <section>
-      {/* Task Templates — 3-column grid */}
-      <div className="mb-6">
-        <h3
-          className="mb-3 text-xs font-semibold uppercase tracking-wide"
-          style={{ color: "var(--text-tertiary)" }}
+    <section
+      style={{
+        height: "calc(100vh - 64px - 64px)",
+        display: "flex",
+        flexDirection: "column",
+        gap: 16,
+      }}
+    >
+      {/* Background tasks notice — only shown when something else is running */}
+      {otherRunning.length > 0 && (
+        <div style={{ flexShrink: 0, display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {otherRunning.map((run) => (
+            <button
+              key={run.localId}
+              type="button"
+              onClick={() => setActiveRunId(run.localId)}
+              className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium transition-colors"
+              style={{
+                backgroundColor: "var(--accent-lime-faded)",
+                color: "var(--accent-lime)",
+                border: "1px solid var(--accent-lime)",
+                cursor: "pointer",
+              }}
+              title={run.userInput}
+            >
+              <span
+                className="inline-block rounded-full"
+                style={{
+                  width: 6,
+                  height: 6,
+                  backgroundColor: "var(--accent-lime)",
+                  boxShadow: "0 0 6px var(--accent-lime)",
+                  animation: "pulse-dot 1.5s ease-in-out infinite",
+                }}
+              />
+              Running in background:{" "}
+              <span
+                style={{
+                  maxWidth: 200,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  display: "inline-block",
+                  verticalAlign: "middle",
+                }}
+              >
+                {run.userInput}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Templates row — compact, 6 cards in one row on large screens */}
+      <div style={{ flexShrink: 0, maxHeight: 100 }}>
+        <div className="mb-2 flex items-center gap-2">
+          <span
+            aria-hidden="true"
+            style={{
+              display: "inline-block",
+              width: 4,
+              height: 12,
+              backgroundColor: "var(--accent-lime)",
+              borderRadius: 2,
+              boxShadow: "0 0 6px var(--accent-lime-glow)",
+            }}
+          />
+          <h3
+            style={{
+              fontSize: 11,
+              fontWeight: 600,
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              color: "var(--text-muted)",
+            }}
+          >
+            Quick Templates
+          </h3>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            gap: 12,
+            overflowX: "auto",
+            paddingBottom: 2,
+          }}
         >
-          Quick Templates
-        </h3>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-3">
           {TASK_TEMPLATES.map((template) => {
             const isSelected = selectedTemplate === template.title;
             return (
@@ -158,27 +194,24 @@ export default function OrchestratePage() {
                 type="button"
                 onClick={() => handleTemplateClick(template)}
                 disabled={loading}
-                className="group relative overflow-hidden rounded-xl p-3 text-left transition-all duration-200"
+                className="group relative overflow-hidden rounded-xl p-2.5 text-left transition-colors duration-200"
                 style={{
-                  backgroundColor: isSelected
-                    ? "var(--accent-blue-light)"
-                    : "var(--bg-primary)",
-                  border: `1px solid ${isSelected ? "var(--accent-blue)" : "var(--border-light)"}`,
+                  backgroundColor: "var(--bg-card)",
+                  border: `1px solid ${isSelected ? "var(--accent-lime)" : "var(--border-light)"}`,
                   cursor: loading ? "not-allowed" : "pointer",
                   opacity: loading ? 0.6 : 1,
+                  flex: "0 0 160px",
+                  minWidth: 160,
                 }}
                 onMouseEnter={(e) => {
                   if (!loading) {
-                    e.currentTarget.style.borderColor = "var(--accent-blue)";
-                    e.currentTarget.style.boxShadow =
-                      "0 1px 3px rgba(0,0,0,0.08)";
+                    e.currentTarget.style.borderColor = "var(--accent-lime)";
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (!isSelected) {
                     e.currentTarget.style.borderColor = "var(--border-light)";
                   }
-                  e.currentTarget.style.boxShadow = "none";
                 }}
               >
                 {/* Left accent bar */}
@@ -186,30 +219,30 @@ export default function OrchestratePage() {
                   className="absolute left-0 top-0 h-full"
                   style={{
                     width: 3,
-                    backgroundColor: "var(--accent-blue)",
+                    backgroundColor: "var(--accent-lime)",
                     borderRadius: "3px 0 0 3px",
                   }}
                 />
                 <div className="pl-2">
                   <div className="mb-1 flex items-center gap-2">
                     <span
-                      className="text-sm font-bold leading-tight"
+                      className="line-clamp-1 text-xs font-bold leading-tight"
                       style={{ color: "var(--text-primary)" }}
                     >
                       {template.title}
                     </span>
                     <span
-                      className="shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-semibold leading-none"
+                      className="shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none"
                       style={{
-                        backgroundColor: "var(--accent-blue-light)",
-                        color: "var(--accent-blue)",
+                        backgroundColor: "var(--accent-lime)",
+                        color: "var(--text-inverse)",
                       }}
                     >
                       {template.agentCount}
                     </span>
                   </div>
                   <span
-                    className="line-clamp-1 text-xs"
+                    className="line-clamp-1 text-[11px]"
                     style={{ color: "var(--text-muted)" }}
                   >
                     {template.subtitle}
@@ -221,59 +254,131 @@ export default function OrchestratePage() {
         </div>
       </div>
 
-      {/* Main area — 9-col grid */}
-      <div className="grid gap-8 lg:grid-cols-9">
+      {/* Main area — fills the remaining viewport height */}
+      <div
+        style={{
+          flex: 1,
+          display: "grid",
+          gridTemplateColumns: "4fr 5fr",
+          gap: 24,
+          minHeight: 0,
+        }}
+      >
         {/* Left panel: Task input + cost estimator */}
-        <div className="lg:col-span-4">
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            minHeight: 0,
+            overflow: "hidden",
+          }}
+        >
           <TaskInput
             value={taskInput}
             onChange={setTaskInput}
             onSubmit={handleSubmit}
             loading={loading}
+            minHeight={120}
           />
           <CostEstimator taskInput={taskInput} />
         </div>
 
-        {/* Right panel: Execution timeline */}
-        <div className="lg:col-span-5">
+        {/* Right panel: Execution timeline — the only thing that scrolls */}
+        <div
+          style={{
+            backgroundColor: "var(--bg-card)",
+            border: "1px solid var(--border-light)",
+            borderRadius: 12,
+            display: "flex",
+            flexDirection: "column",
+            minHeight: 0,
+            flex: 1,
+            overflow: "hidden",
+          }}
+        >
           <div
-            className="rounded-xl p-6"
             style={{
-              backgroundColor: "var(--bg-secondary)",
-              border: "1px solid var(--border-light)",
-              minHeight: 400,
+              padding: "16px 20px",
+              borderBottom: "1px solid var(--border-light)",
+              flexShrink: 0,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
             }}
           >
-            <div className="mb-4 flex items-center justify-between">
-              <h3
-                className="text-card-title"
-                style={{ color: "var(--text-primary)" }}
+            <h3
+              style={{
+                color: "var(--text-primary)",
+                fontWeight: 700,
+                fontSize: 16,
+              }}
+            >
+              Execution Timeline
+            </h3>
+            {loading && (
+              <span
+                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium"
+                style={{
+                  backgroundColor: "var(--accent-lime-faded)",
+                  color: "var(--accent-lime)",
+                  border: "1px solid var(--accent-lime)",
+                }}
               >
-                Execution Timeline
-              </h3>
-              {loading && (
                 <span
-                  className="animate-pulse-skeleton rounded-full px-3 py-1 text-xs"
-                  style={{ backgroundColor: "var(--bg-tertiary)" }}
-                >
-                  Live
-                </span>
-              )}
-            </div>
-            <ExecutionTimeline events={events} />
+                  className="inline-block rounded-full"
+                  style={{
+                    width: 6,
+                    height: 6,
+                    backgroundColor: "var(--accent-lime)",
+                    boxShadow: "0 0 6px var(--accent-lime)",
+                    animation: "pulse-dot 1.5s ease-in-out infinite",
+                  }}
+                />
+                Live
+              </span>
+            )}
+          </div>
 
-            {completedTaskId && (
+          {/* Scrollable events list */}
+          <div
+            style={{
+              flex: 1,
+              overflowY: "auto",
+              padding: 20,
+              minHeight: 0,
+            }}
+          >
+            <ExecutionTimeline events={events} />
+          </div>
+
+          {completedTaskId && (
+            <div
+              style={{
+                padding: 16,
+                borderTop: "1px solid var(--border-light)",
+                flexShrink: 0,
+              }}
+            >
               <button
                 type="button"
                 onClick={() =>
                   router.push(`/dashboard/playground/${completedTaskId}`)
                 }
-                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold transition-all duration-200"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-full text-sm font-bold transition-opacity"
                 style={{
-                  backgroundColor: "var(--accent-green)",
-                  color: "#fff",
+                  backgroundColor: "var(--accent-lime)",
+                  color: "var(--text-inverse)",
                   border: "none",
                   cursor: "pointer",
+                  height: 44,
+                  padding: "0 20px",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor =
+                    "var(--accent-lime-bright)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "var(--accent-lime)";
                 }}
               >
                 <svg
@@ -282,7 +387,7 @@ export default function OrchestratePage() {
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="2"
+                  strokeWidth="2.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
@@ -290,17 +395,8 @@ export default function OrchestratePage() {
                 </svg>
                 View in Playground
               </button>
-            )}
-          </div>
-
-          <div className="mt-4 text-center">
-            <span
-              className="text-caption"
-              style={{ color: "var(--text-muted)" }}
-            >
-              Powered by Locus · All payments in USDC on Base
-            </span>
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </section>

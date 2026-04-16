@@ -6,10 +6,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div style={{ display: "flex", minHeight: "100vh" }}>
       <Sidebar />
-      <div style={{ flex: 1, marginLeft: 260, backgroundColor: "var(--bg-primary)" }}>
+      <div style={{ flex: 1, marginLeft: 240, backgroundColor: "var(--bg-primary)" }}>
         <DashboardTopbar />
         <PageGuidePopup />
-        <main className="px-5 pb-8 pt-6 sm:px-8 lg:px-10">
+        <main style={{ padding: "32px 40px" }}>
           {children}
         </main>
       </div>

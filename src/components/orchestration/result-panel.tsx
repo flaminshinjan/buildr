@@ -25,49 +25,67 @@ export function ResultPanel({ totalCost, agentsHired, finalResult, taskId }: Res
 
   return (
     <div
-      className="animate-fade-in overflow-hidden rounded-xl"
+      className="animate-fade-in overflow-hidden"
       style={{
-        border: "1px solid var(--accent-green)",
+        backgroundColor: "var(--bg-card)",
+        border: "1px solid var(--accent-lime)",
+        borderRadius: 12,
       }}
     >
-      {/* Top banner with subtle gradient */}
+      {/* Top banner with lime gradient */}
       <div
         className="px-6 py-4"
         style={{
-          background: "linear-gradient(135deg, var(--accent-green-light) 0%, var(--accent-green-light) 60%, rgba(74,124,89,0.15) 100%)",
+          background:
+            "linear-gradient(135deg, var(--accent-lime-faded) 0%, transparent 100%)",
+          borderBottom: "1px solid var(--border-light)",
         }}
       >
         <div className="flex items-center gap-3">
           <div
             className="flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold"
-            style={{ backgroundColor: "var(--accent-green)", color: "#fff" }}
+            style={{
+              backgroundColor: "var(--accent-lime)",
+              color: "var(--text-inverse)",
+            }}
           >
             ✓
           </div>
           <h3
-            className="font-bold"
-            style={{ color: "var(--accent-green)", fontSize: 24 }}
+            style={{
+              color: "var(--text-primary)",
+              fontSize: 22,
+              fontWeight: 700,
+            }}
           >
             Task completed
           </h3>
         </div>
       </div>
 
-      <div className="px-6 pb-6 pt-4" style={{ backgroundColor: "var(--accent-green-light)" }}>
+      <div className="px-6 pb-6 pt-4">
         {/* Metrics — 3-column grid */}
         <div
           className="mb-4 grid grid-cols-3 gap-3 rounded-lg p-3"
           style={{
-            backgroundColor: "var(--bg-primary)",
+            backgroundColor: "var(--bg-elevated)",
             border: "1px solid var(--border-light)",
           }}
         >
           <div className="text-center">
-            <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+            <p
+              style={{
+                fontSize: 11,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                color: "var(--text-muted)",
+                fontWeight: 500,
+              }}
+            >
               Agents Hired
             </p>
             <p
-              className="mt-0.5 text-lg font-bold"
+              className="mt-1 font-mono text-lg font-bold"
               style={{ color: "var(--text-primary)" }}
             >
               {agentsHired}
@@ -75,21 +93,40 @@ export function ResultPanel({ totalCost, agentsHired, finalResult, taskId }: Res
           </div>
           <div
             className="text-center"
-            style={{ borderLeft: "1px solid var(--border-light)", borderRight: "1px solid var(--border-light)" }}
+            style={{
+              borderLeft: "1px solid var(--border-light)",
+              borderRight: "1px solid var(--border-light)",
+            }}
           >
-            <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+            <p
+              style={{
+                fontSize: 11,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                color: "var(--text-muted)",
+                fontWeight: 500,
+              }}
+            >
               Total Cost
             </p>
-            <div className="mt-0.5">
+            <div className="mt-1">
               <PriceTag amount={totalCost} size="md" />
             </div>
           </div>
           <div className="text-center">
-            <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+            <p
+              style={{
+                fontSize: 11,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                color: "var(--text-muted)",
+                fontWeight: 500,
+              }}
+            >
               Duration
             </p>
             <p
-              className="mt-0.5 text-lg font-bold"
+              className="mt-1 font-mono text-lg font-bold"
               style={{ color: "var(--text-primary)" }}
             >
               --
@@ -114,17 +151,22 @@ export function ResultPanel({ totalCost, agentsHired, finalResult, taskId }: Res
         <button
           type="button"
           onClick={handleCopy}
-          className="mt-3 inline-flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-medium transition-all duration-200"
+          className="mt-3 inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium transition-colors duration-200"
           style={{
-            backgroundColor: "var(--bg-primary)",
-            border: "1px solid var(--border-light)",
-            color: copied ? "var(--accent-green)" : "var(--text-secondary)",
+            backgroundColor: "transparent",
+            border: `1px solid ${copied ? "var(--accent-lime)" : "var(--border-medium)"}`,
+            color: copied ? "var(--accent-lime)" : "var(--text-secondary)",
+            cursor: "pointer",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = "var(--accent-green)";
+            e.currentTarget.style.borderColor = "var(--accent-lime)";
+            e.currentTarget.style.color = "var(--accent-lime)";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = "var(--border-light)";
+            if (!copied) {
+              e.currentTarget.style.borderColor = "var(--border-medium)";
+              e.currentTarget.style.color = "var(--text-secondary)";
+            }
           }}
         >
           {copied ? (
@@ -155,12 +197,18 @@ export function ResultPanel({ totalCost, agentsHired, finalResult, taskId }: Res
           <button
             type="button"
             onClick={() => router.push(`/dashboard/playground/${taskId}`)}
-            className="mt-2 inline-flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-medium transition-all duration-200"
+            className="ml-2 mt-3 inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold transition-opacity"
             style={{
-              backgroundColor: "var(--accent-blue)",
-              color: "#fff",
+              backgroundColor: "var(--accent-lime)",
+              color: "var(--text-inverse)",
               border: "none",
               cursor: "pointer",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "var(--accent-lime-bright)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "var(--accent-lime)";
             }}
           >
             <svg
@@ -169,7 +217,7 @@ export function ResultPanel({ totalCost, agentsHired, finalResult, taskId }: Res
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
             >

@@ -1,33 +1,50 @@
 @import "tailwindcss";
 
 :root {
-  --bg-primary: #F5F0E8;
-  --bg-secondary: #EDE8DC;
-  --bg-tertiary: #E5DFD1;
-  --bg-dark: #2C2C2C;
-  --bg-dark-secondary: #3A3A3A;
+  /* Backgrounds */
+  --bg-primary: #0A0A0A;
+  --bg-secondary: #111111;
+  --bg-tertiary: #171717;
+  --bg-card: #141414;
+  --bg-elevated: #1A1A1A;
+  --bg-dark: #0A0A0A;
+  --bg-dark-secondary: #1A1A1A;
 
-  --text-primary: #1A1A1A;
-  --text-secondary: #4A4A4A;
-  --text-tertiary: #7A7A7A;
-  --text-on-dark: #F5F0E8;
-  --text-muted: #9A9A8A;
+  /* Text */
+  --text-primary: #FFFFFF;
+  --text-secondary: #B8B8B8;
+  --text-tertiary: #888888;
+  --text-on-dark: #FFFFFF;
+  --text-muted: #5F5F5F;
+  --text-inverse: #0A0A0A;
 
-  --accent-green: #4A7C59;
-  --accent-green-light: #E8F0EB;
-  --accent-blue: #4A6FA5;
-  --accent-blue-light: #E8EEF5;
-  --accent-amber: #B8860B;
-  --accent-amber-light: #FFF8E7;
-  --accent-red: #A54A4A;
-  --accent-red-light: #F5E8E8;
+  /* Lime accent (Locus) */
+  --accent-lime: #CBFF3B;
+  --accent-lime-bright: #D4FF4D;
+  --accent-lime-dim: #9FCC25;
+  --accent-lime-faded: rgba(203, 255, 59, 0.08);
+  --accent-lime-glow: rgba(203, 255, 59, 0.15);
 
-  --border-light: #E0DAD0;
-  --border-medium: #C8C2B4;
+  /* Status / secondary accents for charts etc. (dark-mode tuned) */
+  --accent-green: #4ADE80;
+  --accent-green-light: rgba(74, 222, 128, 0.1);
+  --accent-blue: #60A5FA;
+  --accent-blue-light: rgba(96, 165, 250, 0.1);
+  --accent-amber: #FBBF24;
+  --accent-amber-light: rgba(251, 191, 36, 0.1);
+  --accent-red: #F87171;
+  --accent-red-light: rgba(248, 113, 113, 0.1);
 
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
-  --shadow-lg: 0 8px 24px rgba(0,0,0,0.08);
+  /* Borders */
+  --border-light: #252525;
+  --border-medium: #333333;
+  --border-strong: #404040;
+
+  /* Shadows (more subtle on dark) */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 24px rgba(203, 255, 59, 0.25);
 }
 
 * {
@@ -42,8 +59,18 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
 .font-mono {
   font-family: 'JetBrains Mono', 'IBM Plex Mono', monospace;
+}
+
+.text-lime {
+  color: var(--accent-lime);
 }
 
 .text-hero {
@@ -110,8 +137,8 @@ body {
 
 @keyframes pulse-border {
   0% { border-color: var(--border-light); }
-  30% { border-color: var(--accent-blue); box-shadow: 0 0 0 2px var(--accent-blue-light); }
-  100% { border-color: var(--accent-blue); box-shadow: none; }
+  30% { border-color: var(--accent-lime); box-shadow: 0 0 0 2px var(--accent-lime-glow); }
+  100% { border-color: var(--accent-lime); box-shadow: none; }
 }
 
 @keyframes sidebar-float-a {
@@ -140,4 +167,8 @@ body {
 ::-webkit-scrollbar-thumb {
   background: var(--border-medium);
   border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
 }

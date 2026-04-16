@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Agent } from "@/lib/schema";
 import { CATEGORY_COLORS } from "@/lib/constants";
@@ -12,48 +14,53 @@ const STATUS_LABELS: Record<string, string> = {
 
 export function AgentCard({ agent }: { agent: Agent }) {
   const categoryColor = CATEGORY_COLORS[agent.category] || {
-    bg: "var(--bg-tertiary)",
+    bg: "var(--bg-elevated)",
     text: "var(--text-secondary)",
   };
 
   return (
     <Link href={`/dashboard/agent/${agent.id}`} className="block">
       <div
-        className="agent-card group overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+        className="agent-card group overflow-hidden transition-colors duration-200"
         style={{
-          borderRadius: 16,
-          backgroundColor: "var(--bg-primary)",
+          borderRadius: 12,
+          backgroundColor: "var(--bg-card)",
           border: "1px solid var(--border-light)",
-          boxShadow: "var(--shadow-sm)",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.borderColor = "var(--accent-lime)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.borderColor = "var(--border-light)";
         }}
       >
-        {/* Colored banner strip */}
+        {/* Thin colored accent strip */}
         <div
-          className="flex items-center justify-end px-4"
           style={{
-            height: 40,
-            backgroundColor: categoryColor.bg,
+            height: 2,
+            backgroundColor: categoryColor.text,
           }}
-        >
-          <div className="flex items-center gap-1.5">
+        />
+
+        {/* Main content */}
+        <div style={{ padding: 20 }}>
+          {/* Header row: status */}
+          <div className="mb-3 flex items-center gap-1.5">
             <StatusDot status={agent.status} size={7} />
             <span
               className="text-xs font-medium"
-              style={{ color: categoryColor.text }}
+              style={{ color: "var(--text-tertiary)" }}
             >
               {STATUS_LABELS[agent.status] || agent.status}
             </span>
           </div>
-        </div>
 
-        {/* Main content */}
-        <div style={{ padding: 20 }}>
           {/* Agent name */}
           <h3
             className="mb-2"
             style={{
               fontSize: 18,
-              fontWeight: 600,
+              fontWeight: 700,
               lineHeight: 1.3,
               color: "var(--text-primary)",
             }}
@@ -61,12 +68,13 @@ export function AgentCard({ agent }: { agent: Agent }) {
             {agent.name}
           </h3>
 
-          {/* Category badge */}
+          {/* Category pill */}
           <span
             className="mb-3 inline-flex rounded-full px-3 py-1 text-xs font-medium"
             style={{
-              backgroundColor: categoryColor.bg,
+              backgroundColor: `${categoryColor.text}1A`,
               color: categoryColor.text,
+              border: `1px solid ${categoryColor.text}33`,
             }}
           >
             {agent.category}
@@ -91,11 +99,11 @@ export function AgentCard({ agent }: { agent: Agent }) {
           >
             <div className="text-center">
               <span
-                className="mb-1 block text-caption"
+                className="mb-1 block"
                 style={{
                   fontSize: 11,
                   textTransform: "uppercase" as const,
-                  letterSpacing: "0.05em",
+                  letterSpacing: "0.1em",
                   color: "var(--text-muted)",
                 }}
               >
@@ -109,14 +117,14 @@ export function AgentCard({ agent }: { agent: Agent }) {
                 style={{
                   fontSize: 11,
                   textTransform: "uppercase" as const,
-                  letterSpacing: "0.05em",
+                  letterSpacing: "0.1em",
                   color: "var(--text-muted)",
                 }}
               >
                 Rating
               </span>
               <span
-                className="text-xs font-medium"
+                className="font-mono text-xs font-medium"
                 style={{ color: "var(--text-primary)" }}
               >
                 <span style={{ color: "var(--accent-amber)" }}>&#9733;</span>{" "}
@@ -129,18 +137,17 @@ export function AgentCard({ agent }: { agent: Agent }) {
                 style={{
                   fontSize: 11,
                   textTransform: "uppercase" as const,
-                  letterSpacing: "0.05em",
+                  letterSpacing: "0.1em",
                   color: "var(--text-muted)",
                 }}
               >
                 Jobs
               </span>
               <span
-                className="text-xs font-medium"
+                className="font-mono text-xs font-medium"
                 style={{ color: "var(--text-primary)" }}
               >
                 {agent.total_jobs.toLocaleString()}
-                <span style={{ color: "var(--text-tertiary)" }}> jobs</span>
               </span>
             </div>
           </div>

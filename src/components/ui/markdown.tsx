@@ -14,7 +14,7 @@ const components: Components = {
     <h1
       style={{
         fontSize: 28,
-        fontWeight: 600,
+        fontWeight: 700,
         marginBottom: 16,
         color: "var(--text-primary)",
       }}
@@ -26,7 +26,7 @@ const components: Components = {
     <h2
       style={{
         fontSize: 22,
-        fontWeight: 600,
+        fontWeight: 700,
         marginBottom: 12,
         color: "var(--text-primary)",
         borderBottom: "1px solid var(--border-light)",
@@ -40,7 +40,7 @@ const components: Components = {
     <h3
       style={{
         fontSize: 18,
-        fontWeight: 600,
+        fontWeight: 700,
         marginBottom: 8,
         color: "var(--text-primary)",
       }}
@@ -77,6 +77,7 @@ const components: Components = {
         marginLeft: 24,
         marginBottom: 12,
         listStyleType: "disc",
+        color: "var(--text-secondary)",
       }}
     >
       {children}
@@ -88,6 +89,7 @@ const components: Components = {
         marginLeft: 24,
         marginBottom: 12,
         listStyleType: "decimal",
+        color: "var(--text-secondary)",
       }}
     >
       {children}
@@ -111,10 +113,11 @@ const components: Components = {
         <code
           style={{
             display: "block",
-            backgroundColor: "#1E1E1E",
-            color: "#E8E8E8",
+            backgroundColor: "#0A0A0A",
+            color: "var(--text-primary)",
             padding: 16,
             borderRadius: 12,
+            border: "1px solid var(--border-light)",
             overflowX: "auto",
             fontFamily: "var(--font-mono, monospace)",
             fontSize: 13,
@@ -128,7 +131,9 @@ const components: Components = {
     return (
       <code
         style={{
-          backgroundColor: "var(--bg-tertiary)",
+          backgroundColor: "var(--bg-elevated)",
+          color: "var(--accent-lime)",
+          border: "1px solid var(--border-light)",
           padding: "2px 6px",
           borderRadius: 4,
           fontFamily: "var(--font-mono, monospace)",
@@ -151,13 +156,14 @@ const components: Components = {
   blockquote: ({ children }) => (
     <blockquote
       style={{
-        borderLeft: "3px solid var(--accent-blue)",
+        borderLeft: "3px solid var(--accent-lime)",
         paddingLeft: 16,
-        backgroundColor: "var(--accent-blue-light)",
+        backgroundColor: "var(--bg-elevated)",
         padding: "12px 16px",
         borderRadius: "0 8px 8px 0",
         fontStyle: "italic",
         marginBottom: 12,
+        color: "var(--text-secondary)",
       }}
     >
       {children}
@@ -166,7 +172,7 @@ const components: Components = {
   strong: ({ children }) => (
     <strong
       style={{
-        fontWeight: 600,
+        fontWeight: 700,
         color: "var(--text-primary)",
       }}
     >
@@ -177,7 +183,7 @@ const components: Components = {
     <a
       href={href}
       style={{
-        color: "var(--accent-blue)",
+        color: "var(--accent-lime)",
         textDecoration: "underline",
       }}
       target="_blank"
@@ -189,7 +195,6 @@ const components: Components = {
   hr: () => (
     <hr
       style={{
-        borderTop: "1px solid var(--border-light)",
         margin: "24px 0",
         border: "none",
         borderTopWidth: 1,
@@ -213,7 +218,8 @@ const components: Components = {
   th: ({ children }) => (
     <th
       style={{
-        backgroundColor: "var(--bg-tertiary)",
+        backgroundColor: "var(--bg-elevated)",
+        color: "var(--text-primary)",
         padding: "8px 12px",
         textAlign: "left",
         fontWeight: 600,
@@ -230,6 +236,7 @@ const components: Components = {
         padding: "8px 12px",
         borderTop: "1px solid var(--border-light)",
         fontSize: 14,
+        color: "var(--text-secondary)",
       }}
     >
       {children}

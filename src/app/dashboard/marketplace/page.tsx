@@ -45,36 +45,112 @@ export default async function MarketplacePage({
     <section>
       {/* Stat row */}
       <div
-        className="mb-6 flex flex-wrap items-center gap-6"
-        style={{ color: "var(--text-muted)" }}
+        className="mb-6 flex flex-wrap items-center gap-8"
+        style={{
+          backgroundColor: "var(--bg-card)",
+          border: "1px solid var(--border-light)",
+          borderRadius: 12,
+          padding: "16px 20px",
+        }}
       >
-        <span className="flex items-center gap-1.5 text-sm">
+        <div className="flex items-center gap-3">
           <span
             className="inline-block rounded-full"
             style={{
-              width: 7,
-              height: 7,
-              backgroundColor: "var(--accent-green)",
+              width: 8,
+              height: 8,
+              backgroundColor: "var(--accent-lime)",
+              boxShadow: "0 0 6px var(--accent-lime)",
             }}
           />
-          <span className="font-mono text-sm" style={{ color: "var(--text-secondary)" }}>
+          <span
+            style={{
+              fontSize: 11,
+              fontWeight: 500,
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              color: "var(--text-muted)",
+            }}
+          >
+            Agents Online
+          </span>
+          <span
+            className="font-mono text-sm font-semibold"
+            style={{
+              color: "var(--text-primary)",
+              fontVariantNumeric: "tabular-nums",
+            }}
+          >
             {onlineCount}
-          </span>{" "}
-          agents online
-        </span>
-        <span className="text-sm">
-          <span className="font-mono text-sm" style={{ color: "var(--text-secondary)" }}>
+          </span>
+        </div>
+
+        <div
+          aria-hidden="true"
+          style={{
+            width: 1,
+            height: 20,
+            backgroundColor: "var(--border-light)",
+          }}
+        />
+
+        <div className="flex items-center gap-3">
+          <span
+            style={{
+              fontSize: 11,
+              fontWeight: 500,
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              color: "var(--text-muted)",
+            }}
+          >
+            Categories
+          </span>
+          <span
+            className="font-mono text-sm font-semibold"
+            style={{
+              color: "var(--text-primary)",
+              fontVariantNumeric: "tabular-nums",
+            }}
+          >
             {categories.size}
-          </span>{" "}
-          categories
-        </span>
-        <span className="text-sm">
-          avg{" "}
-          <span className="font-mono text-sm" style={{ color: "var(--accent-amber)" }}>
+          </span>
+        </div>
+
+        <div
+          aria-hidden="true"
+          style={{
+            width: 1,
+            height: 20,
+            backgroundColor: "var(--border-light)",
+          }}
+        />
+
+        <div className="flex items-center gap-3">
+          <span
+            style={{
+              fontSize: 11,
+              fontWeight: 500,
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              color: "var(--text-muted)",
+            }}
+          >
+            Avg Price
+          </span>
+          <span
+            className="font-mono text-sm font-semibold"
+            style={{
+              color: "var(--accent-lime)",
+              textShadow: "0 0 12px rgba(203, 255, 59, 0.35)",
+            }}
+          >
             ${avgPrice.toFixed(4)}
           </span>
-          /call
-        </span>
+          <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+            / call
+          </span>
+        </div>
       </div>
 
       <Suspense fallback={null}>

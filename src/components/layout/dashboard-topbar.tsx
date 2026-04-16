@@ -1,6 +1,8 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useTaskStore } from "@/lib/task-store";
 
 const PAGE_META: Record<string, { title: string; subtitle: string }> = {
   "/dashboard": {
@@ -31,27 +33,73 @@ const PAGE_META: Record<string, { title: string; subtitle: string }> = {
 
 function SearchIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="7" cy="7" r="5.5" stroke="#525252" strokeWidth="1.5" />
-      <path d="M11 11L14 14" stroke="#525252" strokeWidth="1.5" strokeLinecap="round" />
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle cx="6" cy="6" r="4.75" stroke="currentColor" strokeWidth="1.5" />
+      <path
+        d="M9.5 9.5L12.5 12.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function PlusGlyph() {
+  return (
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M6 2V10M2 6H10"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
 
 export function DashboardTopbar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const runs = useTaskStore((s) => s.runs);
+  const order = useTaskStore((s) => s.order);
+  const setActiveRunId = useTaskStore((s) => s.setActiveRunId);
+  const runningTasks = order.filter((id) => runs[id]?.status === "running");
 
   const isAgentDetail = pathname.startsWith("/dashboard/agent/");
   const isPlayground = pathname.startsWith("/dashboard/playground/");
+  const isOnOrchestrate = pathname.startsWith("/dashboard/orchestrate");
+
+  function handleRunningClick() {
+    if (runningTasks.length > 0) {
+      setActiveRunId(runningTasks[0]);
+      router.push("/dashboard/orchestrate");
+    }
+  }
+
   const meta = isAgentDetail
     ? { title: "Agent Detail", subtitle: "Performance and transaction history" }
     : isPlayground
-      ? { title: "Agent Playground", subtitle: "View agent outputs and payment details" }
+      ? {
+          title: "Agent Playground",
+          subtitle: "View agent outputs and payment details",
+        }
       : PAGE_META[pathname] ?? { title: "Dashboard", subtitle: "" };
 
   return (
     <div
-      className="relative overflow-hidden backdrop-blur-sm"
       style={{
         position: "sticky",
         top: 0,
@@ -59,48 +107,28 @@ export function DashboardTopbar() {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        minHeight: 72,
-        padding: "12px 40px",
-        borderBottom: "1px solid rgba(224, 218, 208, 0.8)",
-        background:
-          "linear-gradient(180deg, rgba(245, 240, 232, 0.95) 0%, rgba(245, 240, 232, 0.88) 100%)",
+        height: 64,
+        padding: "0 32px",
+        borderBottom: "1px solid var(--border-light)",
+        backgroundColor: "var(--bg-primary)",
       }}
     >
-      <div
-        className="pointer-events-none absolute -left-8 -top-10 h-20 w-20 rounded-full blur-2xl"
-        style={{
-          background: "rgba(74, 111, 165, 0.18)",
-          animation: "nav-float 7s ease-in-out infinite",
-        }}
-      />
       {/* Left — title + subtitle */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 4, position: "relative", zIndex: 1 }}>
-        <div className="flex items-center gap-2">
-          <span
-            className="h-2 w-2 rounded-full"
-            style={{
-              backgroundColor: "var(--accent-green)",
-              boxShadow: "0 0 8px rgba(74,124,89,0.45)",
-            }}
-          />
-          <span
-            style={{
-              fontSize: 11,
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              color: "var(--text-tertiary)",
-              fontWeight: 600,
-            }}
-          >
-            Dashboard
-          </span>
-        </div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+          minWidth: 0,
+        }}
+      >
         <h1
           style={{
             margin: 0,
             fontSize: 20,
-            fontWeight: 600,
+            fontWeight: 700,
             color: "var(--text-primary)",
+            letterSpacing: "-0.015em",
             lineHeight: 1.2,
           }}
         >
@@ -110,7 +138,7 @@ export function DashboardTopbar() {
           <span
             style={{
               fontSize: 13,
-              color: "var(--text-tertiary)",
+              color: "var(--text-muted)",
               lineHeight: 1.2,
             }}
           >
@@ -119,36 +147,131 @@ export function DashboardTopbar() {
         )}
       </div>
 
-      {/* Right — search pill */}
+      {/* Right — running indicator + search + new task */}
       <div
         style={{
           display: "flex",
           alignItems: "center",
-          gap: 10,
-          width: 240,
-          height: 40,
-          padding: "0 14px",
-          borderRadius: 9999,
-          background:
-            "linear-gradient(180deg, rgba(237, 232, 220, 0.9) 0%, rgba(229, 223, 209, 0.75) 100%)",
-          border: "1px solid var(--border-light)",
-          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.45)",
-          cursor: "default",
-          transition: "transform 240ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 240ms ease",
-          animation: "nav-float 8s ease-in-out infinite",
+          gap: 12,
         }}
       >
-        <SearchIcon />
-        <span
+        {/* Pulsing-dot keyframes (scoped via unique name) */}
+        <style>{`
+          @keyframes topbar-running-pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.45; transform: scale(0.7); }
+          }
+        `}</style>
+
+        {/* Running tasks pill — only when there are running tasks */}
+        {runningTasks.length > 0 && (
+          <button
+            type="button"
+            onClick={handleRunningClick}
+            aria-label={`${runningTasks.length} task${runningTasks.length === 1 ? "" : "s"} running — view latest`}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              height: 28,
+              padding: "0 12px",
+              borderRadius: 9999,
+              backgroundColor: "var(--accent-lime)",
+              color: "var(--text-inverse)",
+              fontSize: 12,
+              fontWeight: 700,
+              letterSpacing: "-0.01em",
+              border: "none",
+              cursor: "pointer",
+              transition: "box-shadow 150ms ease",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.boxShadow =
+                "0 0 0 1px var(--accent-lime-glow), 0 0 16px var(--accent-lime-glow)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = "none";
+            }}
+          >
+            <span
+              style={{
+                display: "inline-block",
+                width: 8,
+                height: 8,
+                borderRadius: "50%",
+                backgroundColor: "var(--text-inverse)",
+                animation: "topbar-running-pulse 1.2s ease-in-out infinite",
+              }}
+            />
+            {runningTasks.length} running
+          </button>
+        )}
+
+        {/* Search pill (decorative) */}
+        <div
           style={{
-            fontSize: 13,
-            color: "var(--text-tertiary)",
-            userSelect: "none",
-            whiteSpace: "nowrap",
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            width: 200,
+            height: 36,
+            padding: "0 14px",
+            borderRadius: 9999,
+            backgroundColor: "var(--bg-elevated)",
+            border: "1px solid var(--border-light)",
+            color: "var(--text-muted)",
+            cursor: "default",
           }}
         >
-          Search agents...
-        </span>
+          <SearchIcon />
+          <span
+            style={{
+              fontSize: 13,
+              color: "var(--text-muted)",
+              userSelect: "none",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Search agents...
+          </span>
+        </div>
+
+        {/* New Task button — lime + dark text, only when not on orchestrate */}
+        {!isOnOrchestrate && (
+          <Link
+            href="/dashboard/orchestrate"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              height: 36,
+              padding: "0 18px",
+              borderRadius: 9999,
+              backgroundColor: "var(--accent-lime)",
+              color: "var(--text-inverse)",
+              fontSize: 13,
+              fontWeight: 700,
+              letterSpacing: "-0.01em",
+              textDecoration: "none",
+              transition:
+                "background-color 150ms ease, box-shadow 150ms ease",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLAnchorElement).style.backgroundColor =
+                "var(--accent-lime-bright)";
+              (e.currentTarget as HTMLAnchorElement).style.boxShadow =
+                "var(--shadow-glow)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLAnchorElement).style.backgroundColor =
+                "var(--accent-lime)";
+              (e.currentTarget as HTMLAnchorElement).style.boxShadow = "none";
+            }}
+          >
+            <PlusGlyph />
+            New Task
+          </Link>
+        )}
       </div>
     </div>
   );

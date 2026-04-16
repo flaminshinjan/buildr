@@ -154,7 +154,7 @@ export function LiveActivityTicker() {
   // Clear animation class after transition
   useEffect(() => {
     if (newIds.size === 0) return;
-    const timer = setTimeout(() => setNewIds(new Set()), 500);
+    const timer = setTimeout(() => setNewIds(new Set()), 1200);
     return () => clearTimeout(timer);
   }, [newIds]);
 
@@ -162,18 +162,13 @@ export function LiveActivityTicker() {
 
   return (
     <div
-      className="relative overflow-hidden rounded-2xl border p-5"
       style={{
-        background:
-          "linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, transparent 60%), var(--bg-primary)",
+        backgroundColor: "var(--bg-card)",
         border: "1px solid var(--border-light)",
-        boxShadow: "var(--shadow-sm)",
+        borderRadius: 12,
+        padding: 20,
       }}
     >
-      <div
-        className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full blur-2xl"
-        style={{ backgroundColor: "rgba(74, 124, 89, 0.16)" }}
-      />
       {/* Header */}
       <div className="mb-3 flex items-center gap-2">
         <span
@@ -182,12 +177,15 @@ export function LiveActivityTicker() {
             width: 8,
             height: 8,
             borderRadius: "50%",
-            backgroundColor: "var(--accent-green)",
-            boxShadow: "0 0 6px var(--accent-green)",
+            backgroundColor: "var(--accent-lime)",
+            boxShadow: "0 0 8px var(--accent-lime)",
             animation: "pulse-dot 2s ease-in-out infinite",
           }}
         />
-        <h3 className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+        <h3
+          className="text-sm font-bold"
+          style={{ color: "var(--text-primary)" }}
+        >
           Live Activity
         </h3>
         <span className="text-xs" style={{ color: "var(--text-muted)" }}>
@@ -204,7 +202,10 @@ export function LiveActivityTicker() {
         }}
       >
         {isEmpty ? (
-          <p className="py-4 text-center text-sm" style={{ color: "var(--text-tertiary)" }}>
+          <p
+            className="py-4 text-center text-sm"
+            style={{ color: "var(--text-tertiary)" }}
+          >
             No activity yet. Run a task or trigger a transaction to see events here.
           </p>
         ) : (
@@ -214,13 +215,10 @@ export function LiveActivityTicker() {
               return (
                 <div
                   key={event.id}
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 transition-all duration-300 hover:translate-x-0.5"
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2 ${isNew ? "live-event-new" : ""}`}
                   style={{
-                    backgroundColor: isNew
-                      ? "var(--bg-tertiary)"
-                      : "var(--bg-secondary)",
-                    transition: "background-color 0.5s ease",
-                    animation: isNew ? "slide-down 0.35s ease-out" : undefined,
+                    backgroundColor: "var(--bg-elevated)",
+                    transition: "background-color 0.3s ease",
                   }}
                 >
                   {/* Icon */}
@@ -229,9 +227,9 @@ export function LiveActivityTicker() {
                     style={{
                       backgroundColor:
                         event.type === "transaction"
-                          ? "var(--accent-green)"
+                          ? "var(--accent-lime)"
                           : "var(--accent-amber)",
-                      color: "#fff",
+                      color: "var(--text-inverse)",
                     }}
                   >
                     {event.icon}
@@ -265,22 +263,32 @@ export function LiveActivityTicker() {
           0%,
           100% {
             opacity: 1;
-            box-shadow: 0 0 6px var(--accent-green);
+            box-shadow: 0 0 6px var(--accent-lime);
           }
           50% {
-            opacity: 0.5;
-            box-shadow: 0 0 12px var(--accent-green);
+            opacity: 0.6;
+            box-shadow: 0 0 14px var(--accent-lime);
           }
         }
-        @keyframes slide-down {
-          from {
+        @keyframes lime-glow-in {
+          0% {
             opacity: 0;
             transform: translateY(-8px);
+            box-shadow: 0 0 0 0 rgba(203, 255, 59, 0);
           }
-          to {
+          30% {
+            opacity: 1;
+            transform: translateY(0);
+            box-shadow: 0 0 12px 1px rgba(203, 255, 59, 0.35);
+          }
+          100% {
+            box-shadow: 0 0 0 0 rgba(203, 255, 59, 0);
             opacity: 1;
             transform: translateY(0);
           }
+        }
+        .live-event-new {
+          animation: lime-glow-in 1s ease-out 1;
         }
       `}</style>
     </div>

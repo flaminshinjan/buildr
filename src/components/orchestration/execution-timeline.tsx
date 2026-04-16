@@ -6,36 +6,83 @@ import { NegotiationLog } from "./negotiation-log";
 import { ResultPanel } from "./result-panel";
 import { Badge } from "@/components/ui/badge";
 
-/* Color map for icon backgrounds by event type */
+/* Color map for icon backgrounds by event type (dark-theme adjusted) */
 function getIconStyle(eventType: string, status?: string): React.CSSProperties {
   switch (eventType) {
     case "decomposition":
-      return { backgroundColor: "var(--accent-blue)", color: "#fff" };
+      return {
+        backgroundColor: "var(--accent-blue-light)",
+        color: "var(--accent-blue)",
+        border: "1px solid var(--accent-blue)",
+      };
     case "discovery":
-      return { backgroundColor: "var(--accent-blue-light)", color: "var(--accent-blue)" };
+      return {
+        backgroundColor: "var(--accent-blue-light)",
+        color: "var(--accent-blue)",
+        border: "1px solid var(--accent-blue)",
+      };
     case "negotiation":
-      return { backgroundColor: "var(--accent-amber)", color: "#fff" };
+      return {
+        backgroundColor: "var(--accent-amber-light)",
+        color: "var(--accent-amber)",
+        border: "1px solid var(--accent-amber)",
+      };
     case "payment":
-      return { backgroundColor: "var(--accent-green)", color: "#fff" };
+      return {
+        backgroundColor: "var(--accent-lime-faded)",
+        color: "var(--accent-lime)",
+        border: "1px solid var(--accent-lime)",
+      };
     case "execution":
       return status === "completed"
-        ? { backgroundColor: "var(--accent-green)", color: "#fff" }
-        : { backgroundColor: "var(--accent-amber)", color: "#fff" };
+        ? {
+            backgroundColor: "var(--accent-green-light)",
+            color: "var(--accent-green)",
+            border: "1px solid var(--accent-green)",
+          }
+        : {
+            backgroundColor: "var(--accent-amber-light)",
+            color: "var(--accent-amber)",
+            border: "1px solid var(--accent-amber)",
+          };
     case "assembly":
-      return { backgroundColor: "var(--accent-blue)", color: "#fff" };
+      return {
+        backgroundColor: "var(--accent-blue-light)",
+        color: "var(--accent-blue)",
+        border: "1px solid var(--accent-blue)",
+      };
     case "completion":
-      return { backgroundColor: "var(--accent-green)", color: "#fff" };
+      return {
+        backgroundColor: "var(--accent-lime-faded)",
+        color: "var(--accent-lime)",
+        border: "1px solid var(--accent-lime)",
+      };
     case "error":
-      return { backgroundColor: "var(--accent-red)", color: "#fff" };
+      return {
+        backgroundColor: "var(--accent-red-light)",
+        color: "var(--accent-red)",
+        border: "1px solid var(--accent-red)",
+      };
     default:
-      return { backgroundColor: "var(--bg-tertiary)", color: "var(--text-secondary)" };
+      return {
+        backgroundColor: "var(--bg-elevated)",
+        color: "var(--text-secondary)",
+        border: "1px solid var(--border-light)",
+      };
   }
 }
 
 export function ExecutionTimeline({ events }: { events: OrchestrationEvent[] }) {
   if (events.length === 0) {
     return (
-      <div className="flex h-full flex-col items-center justify-center py-20">
+      <div
+        className="flex flex-col items-center justify-center py-16"
+        style={{
+          border: "2px dashed var(--border-medium)",
+          borderRadius: 12,
+          minHeight: 280,
+        }}
+      >
         {/* Dashed circle with arrow illustration */}
         <div
           className="mb-5 flex h-16 w-16 items-center justify-center rounded-full"
@@ -63,10 +110,7 @@ export function ExecutionTimeline({ events }: { events: OrchestrationEvent[] }) 
         >
           Submit a task to begin
         </p>
-        <p
-          className="mt-1 text-xs"
-          style={{ color: "var(--text-muted)" }}
-        >
+        <p className="mt-1 text-xs" style={{ color: "var(--text-muted)" }}>
           Watch agents get discovered, hired, and paid in real-time
         </p>
       </div>
@@ -101,7 +145,10 @@ function TimelineEvent({
     case "decomposition":
       return (
         <EventCard icon="◧" iconStyle={iconStyle} time={time} isLast={isLast}>
-          <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
+          <p
+            className="text-sm font-medium"
+            style={{ color: "var(--text-primary)" }}
+          >
             Task decomposed into {event.data.count as number} sub-tasks
           </p>
           <div className="mt-2 flex flex-wrap gap-2">
@@ -121,7 +168,9 @@ function TimelineEvent({
         <EventCard icon="◉" iconStyle={iconStyle} time={time} isLast={isLast}>
           <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
             Searching for{" "}
-            <span className="font-medium">{event.data.category as string}</span>{" "}
+            <span className="font-medium" style={{ color: "var(--text-primary)" }}>
+              {event.data.category as string}
+            </span>{" "}
             agents...
           </p>
         </EventCard>
@@ -174,7 +223,10 @@ function TimelineEvent({
           <p className="text-sm" style={{ color: "var(--text-primary)" }}>
             Paid{" "}
             <span className="font-medium">{event.data.agent_name as string}</span>{" "}
-            <span className="font-mono" style={{ color: "var(--accent-amber)" }}>
+            <span
+              className="font-mono"
+              style={{ color: "var(--accent-lime)" }}
+            >
               ${(event.data.amount as number).toFixed(4)} USDC
             </span>{" "}
             via Locus
@@ -189,7 +241,7 @@ function TimelineEvent({
             <div className="mt-2 flex flex-wrap items-center gap-2">
               <span
                 className="font-mono text-xs"
-                style={{ color: "var(--accent-green)" }}
+                style={{ color: "var(--accent-lime)" }}
               >
                 {truncatedHash}
               </span>
@@ -199,9 +251,9 @@ function TimelineEvent({
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium transition-colors"
                 style={{
-                  backgroundColor: "var(--accent-green-light)",
-                  color: "var(--accent-green)",
-                  border: "1px solid var(--accent-green)",
+                  backgroundColor: "var(--accent-lime-faded)",
+                  color: "var(--accent-lime)",
+                  border: "1px solid var(--accent-lime)",
                 }}
               >
                 View on Basescan &#x2197;
@@ -242,14 +294,15 @@ function TimelineEvent({
             <details className="mt-2">
               <summary
                 className="cursor-pointer text-xs"
-                style={{ color: "var(--accent-blue)" }}
+                style={{ color: "var(--accent-lime)" }}
               >
                 View output
               </summary>
               <div
                 className="mt-2 rounded-lg p-3 text-xs whitespace-pre-wrap"
                 style={{
-                  backgroundColor: "var(--bg-secondary)",
+                  backgroundColor: "var(--bg-elevated)",
+                  border: "1px solid var(--border-light)",
                   color: "var(--text-secondary)",
                   maxHeight: 200,
                   overflow: "auto",
@@ -334,7 +387,10 @@ function EventCard({
         {icon}
       </div>
       <div className="flex-1 pt-0.5">
-        <p className="mb-1 text-xs" style={{ color: "var(--text-muted)" }}>
+        <p
+          className="mb-1 font-mono text-xs"
+          style={{ color: "var(--text-muted)" }}
+        >
           {time}
         </p>
         {children}
@@ -357,16 +413,16 @@ if (typeof window !== "undefined") {
       }
       @keyframes paymentGlow {
         0% {
-          box-shadow: 0 0 0 0 rgba(74, 124, 89, 0);
-          background-color: rgba(74, 124, 89, 0);
+          box-shadow: 0 0 0 0 rgba(203, 255, 59, 0);
+          background-color: rgba(203, 255, 59, 0);
         }
         20% {
-          box-shadow: 0 0 16px 2px rgba(74, 124, 89, 0.45);
-          background-color: rgba(232, 240, 235, 0.6);
+          box-shadow: 0 0 18px 2px rgba(203, 255, 59, 0.4);
+          background-color: rgba(203, 255, 59, 0.06);
         }
         100% {
-          box-shadow: 0 0 0 0 rgba(74, 124, 89, 0);
-          background-color: rgba(74, 124, 89, 0);
+          box-shadow: 0 0 0 0 rgba(203, 255, 59, 0);
+          background-color: rgba(203, 255, 59, 0);
         }
       }
     `;
