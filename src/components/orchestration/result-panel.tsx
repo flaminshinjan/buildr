@@ -32,12 +32,11 @@ export function ResultPanel({ totalCost, agentsHired, finalResult, taskId }: Res
         borderRadius: 12,
       }}
     >
-      {/* Top banner with lime gradient */}
+      {/* Top banner */}
       <div
         className="px-6 py-4"
         style={{
-          background:
-            "linear-gradient(135deg, var(--accent-lime-faded) 0%, transparent 100%)",
+          backgroundColor: "var(--accent-lime-faded)",
           borderBottom: "1px solid var(--border-light)",
         }}
       >

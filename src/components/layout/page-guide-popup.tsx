@@ -197,7 +197,7 @@ export function PageGuidePopup() {
             className="h-full rounded-full transition-all duration-300"
             style={{
               width: `${((stepIndex + 1) / totalSteps) * 100}%`,
-              background: "linear-gradient(90deg, var(--accent-blue), var(--accent-green))",
+              backgroundColor: "var(--accent-lime)",
             }}
           />
         </div>
@@ -207,8 +207,7 @@ export function PageGuidePopup() {
         className="mb-6 rounded-xl border p-4"
         style={{
           borderColor: "var(--border-light)",
-          background:
-            "linear-gradient(145deg, rgba(74,111,165,0.08) 0%, rgba(74,124,89,0.06) 100%), var(--bg-primary)",
+          backgroundColor: "var(--bg-elevated)",
         }}
       >
         <h3 className="mb-2 text-lg font-semibold" style={{ color: "var(--text-primary)" }}>

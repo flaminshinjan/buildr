@@ -324,8 +324,7 @@ export default function PlaygroundPage({
               style={{
                 padding: "16px 20px",
                 borderBottom: "1px solid var(--border-light)",
-                background:
-                  "linear-gradient(135deg, var(--accent-lime-faded) 0%, transparent 100%)",
+                backgroundColor: "var(--accent-lime-faded)",
               }}
             >
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>

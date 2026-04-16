@@ -100,15 +100,6 @@ export default function HomePage() {
       <main className="flex-1">
         {/* ── Hero ──────────────────────────────────────────────── */}
         <section className="relative overflow-hidden" style={{ paddingTop: 80, paddingBottom: 100 }}>
-          {/* Subtle gradient orbs */}
-          <div
-            className="pointer-events-none absolute -top-40 -right-40 h-[600px] w-[600px] rounded-full opacity-[0.07]"
-            style={{ background: "radial-gradient(circle, var(--accent-green) 0%, transparent 70%)" }}
-          />
-          <div
-            className="pointer-events-none absolute -bottom-40 -left-40 h-[500px] w-[500px] rounded-full opacity-[0.05]"
-            style={{ background: "radial-gradient(circle, var(--accent-blue) 0%, transparent 70%)" }}
-          />
 
           <Container>
             <div className="flex flex-col items-center text-center">
@@ -164,7 +155,7 @@ export default function HomePage() {
                 <div
                   className="rounded-2xl p-1"
                   style={{
-                    background: "linear-gradient(135deg, var(--border-light) 0%, var(--bg-tertiary) 100%)",
+                    backgroundColor: "var(--border-light)",
                   }}
                 >
                   <div

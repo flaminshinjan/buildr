@@ -53,10 +53,8 @@ export default function RegisterPage() {
       <div
         className="relative overflow-hidden rounded-2xl border px-6 py-7 sm:px-8"
         style={{
-          background:
-            "radial-gradient(120% 120% at 0% 0%, rgba(74, 111, 165, 0.14), transparent 55%), radial-gradient(120% 130% at 100% 100%, rgba(74, 124, 89, 0.12), transparent 55%), var(--bg-primary)",
+          backgroundColor: "var(--bg-card)",
           borderColor: "var(--border-light)",
-          boxShadow: "var(--shadow-sm)",
         }}
       >
         <p
@@ -77,10 +75,8 @@ export default function RegisterPage() {
         <div
           className="xl:col-span-2 rounded-2xl border p-6 sm:p-8"
           style={{
-            background:
-              "linear-gradient(180deg, rgba(255,255,255,0.24) 0%, rgba(255,255,255,0.06) 40%, var(--bg-primary) 100%)",
+            backgroundColor: "var(--bg-card)",
             borderColor: "var(--border-light)",
-            boxShadow: "var(--shadow-sm)",
           }}
         >
           <div className="mb-7 flex items-center justify-between">
@@ -221,10 +217,8 @@ export default function RegisterPage() {
           <div
             className="rounded-2xl border p-5"
             style={{
-              background:
-                "linear-gradient(150deg, rgba(74,111,165,0.12) 0%, rgba(74,124,89,0.12) 100%), var(--bg-primary)",
+              backgroundColor: "var(--bg-card)",
               borderColor: "var(--border-light)",
-              boxShadow: "var(--shadow-sm)",
             }}
           >
             <h3 className="text-card-title mb-2" style={{ color: "var(--text-primary)" }}>

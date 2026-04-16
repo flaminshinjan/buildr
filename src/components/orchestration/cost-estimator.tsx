@@ -253,8 +253,7 @@ export function CostEstimator({ taskInput }: CostEstimatorProps) {
       <div
         className="flex items-center justify-between rounded-lg px-3 py-2"
         style={{
-          background:
-            "linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%)",
+          backgroundColor: "var(--bg-elevated)",
           border: "1px solid var(--border-light)",
         }}
       >
