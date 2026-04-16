@@ -1,0 +1,35 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "src/app/api/orchestrate/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/agents/wrapped-firecrawl/execute/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/agents/wrapped-exa/execute/route.ts": {
+      "maxDuration": 30
+    },
+    "src/app/api/agents/wrapped-openai/execute/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/agents/wrapped-anthropic/execute/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/agents/wrapped-deepl/execute/route.ts": {
+      "maxDuration": 30
+    },
+    "src/app/api/agents/wrapped-stability/execute/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/agents/wrapped-perplexity/execute/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/agents/wrapped-brave/execute/route.ts": {
+      "maxDuration": 30
+    },
+    "src/app/api/agents/wrapped-deepgram/execute/route.ts": {
+      "maxDuration": 60
+    }
+  }
+}

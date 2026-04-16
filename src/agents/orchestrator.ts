@@ -63,7 +63,10 @@ export async function orchestrateTask(
   onEvent: (event: OrchestrationEvent) => void
 ) {
   const db = getDb();
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  // Prefer explicit NEXT_PUBLIC_APP_URL; fall back to Vercel's auto-provided URL.
+  const appUrl =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 
   try {
     // Step 0: Fetch content from any URLs in the input
@@ -144,17 +147,14 @@ export async function orchestrateTask(
             `Payment for ${subTask.category} task #${taskId.slice(0, 8)}`
           );
 
-      // Poll Locus for the on-chain tx_hash (confirmation typically takes 10-30s)
+      // Light sync poll for tx_hash (1 try, 1.5s max) — don't block the SSE stream on on-chain confirmation.
+      // A background poller (see fire-and-forget below) will fill in the hash + update the DB
+      // asynchronously after the stream has already completed.
       let txHash: string | null = null;
       if (txResult.success) {
-        for (let i = 0; i < 5; i++) {
-          await new Promise((r) => setTimeout(r, 2000));
-          const txDetail = await getTransaction(apiKey, txResult.tx_id);
-          if (txDetail?.tx_hash) {
-            txHash = txDetail.tx_hash;
-            break;
-          }
-        }
+        await new Promise((r) => setTimeout(r, 1500));
+        const txDetail = await getTransaction(apiKey, txResult.tx_id).catch(() => null);
+        if (txDetail?.tx_hash) txHash = txDetail.tx_hash;
       }
 
       // Record transaction
@@ -204,11 +204,22 @@ export async function orchestrateTask(
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ text: subTask.description }),
+          signal: AbortSignal.timeout(20000),
         });
+        if (!execRes.ok) {
+          console.error(
+            `[Orchestrator] Specialist ${agent.name} responded ${execRes.status}`
+          );
+          throw new Error(`Specialist ${agent.name} HTTP ${execRes.status}`);
+        }
         const execData = await execRes.json();
         agentResult = execData.result || "No result returned";
-      } catch {
-        agentResult = `[Demo] ${agent.name} processed: "${subTask.description.slice(0, 100)}"`;
+      } catch (err) {
+        console.error(
+          `[Orchestrator] Specialist fetch failed for ${agent.name} at ${appUrl}${agent.endpoint}:`,
+          err
+        );
+        agentResult = `[Fallback] ${agent.name} could not be reached. Sub-task: "${subTask.description.slice(0, 120)}"`;
       }
 
       subTask.result = agentResult;
