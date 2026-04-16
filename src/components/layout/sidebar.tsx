@@ -106,22 +106,39 @@ export function Sidebar() {
 
   return (
     <aside
+      className="overflow-hidden"
       style={{
         position: "fixed",
         top: 0,
         left: 0,
         width: 260,
         height: "100vh",
-        background: "linear-gradient(180deg, #1E1E1E 0%, #252525 100%)",
-        color: "#E0E0E0",
+        background:
+          "radial-gradient(140% 110% at 0% 0%, rgba(74, 111, 165, 0.18) 0%, transparent 45%), linear-gradient(180deg, #1F2A37 0%, #18212D 100%)",
+        color: "var(--text-on-dark)",
         display: "flex",
         flexDirection: "column",
         zIndex: 40,
-        borderRight: "1px solid rgba(255,255,255,0.06)",
+        borderRight: "1px solid rgba(255,255,255,0.1)",
+        boxShadow: "inset -1px 0 0 rgba(255,255,255,0.04)",
       }}
     >
+      <div
+        className="pointer-events-none absolute -top-10 -left-8 h-32 w-32 rounded-full blur-2xl"
+        style={{
+          background: "rgba(74, 111, 165, 0.28)",
+          animation: "sidebar-float-a 9s ease-in-out infinite",
+        }}
+      />
+      <div
+        className="pointer-events-none absolute bottom-20 -right-10 h-28 w-28 rounded-full blur-2xl"
+        style={{
+          background: "rgba(74, 124, 89, 0.24)",
+          animation: "sidebar-float-b 11s ease-in-out infinite",
+        }}
+      />
       {/* Brand */}
-      <div style={{ padding: "28px 24px 36px" }}>
+      <div style={{ padding: "28px 24px 36px", position: "relative", zIndex: 1 }}>
         <Link
           href="/"
           style={{
@@ -131,7 +148,7 @@ export function Sidebar() {
             fontSize: 22,
             fontWeight: 700,
             letterSpacing: "-0.03em",
-            color: "#FFFFFF",
+            color: "var(--text-on-dark)",
             textDecoration: "none",
           }}
         >
@@ -142,8 +159,8 @@ export function Sidebar() {
               width: 8,
               height: 8,
               borderRadius: "50%",
-              backgroundColor: "#34D399",
-              boxShadow: "0 0 8px rgba(52,211,153,0.5)",
+              backgroundColor: "var(--accent-green)",
+              boxShadow: "0 0 10px rgba(74,124,89,0.7)",
               flexShrink: 0,
             }}
           />
@@ -151,7 +168,7 @@ export function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav style={{ flex: 1, padding: "0 12px", display: "flex", flexDirection: "column", gap: 24 }}>
+      <nav style={{ flex: 1, padding: "0 12px", display: "flex", flexDirection: "column", gap: 24, position: "relative", zIndex: 1 }}>
         {SECTIONS.map((section) => (
           <div key={section.title}>
             {/* Section label */}
@@ -160,7 +177,7 @@ export function Sidebar() {
                 fontSize: 11,
                 fontWeight: 600,
                 letterSpacing: "0.08em",
-                color: "#525252",
+                color: "rgba(245,240,232,0.44)",
                 padding: "0 16px",
                 marginBottom: 8,
                 textTransform: "uppercase" as const,
@@ -187,17 +204,25 @@ export function Sidebar() {
                         alignItems: "center",
                         gap: 12,
                         padding: "10px 16px",
-                        borderRadius: 8,
+                        borderRadius: 10,
                         fontSize: 14,
                         fontWeight: active ? 500 : 400,
-                        color: active ? "#FFFFFF" : hovered ? "#A0A0A0" : "#6B6B6B",
-                        backgroundColor: active
-                          ? "rgba(255,255,255,0.06)"
+                        color: active
+                          ? "var(--text-on-dark)"
                           : hovered
-                          ? "rgba(255,255,255,0.03)"
-                          : "transparent",
+                            ? "rgba(245,240,232,0.85)"
+                            : "rgba(245,240,232,0.66)",
+                        background: active
+                          ? "linear-gradient(90deg, rgba(74,111,165,0.25) 0%, rgba(74,124,89,0.2) 100%)"
+                          : hovered
+                            ? "rgba(255,255,255,0.04)"
+                            : "transparent",
+                        border: active
+                          ? "1px solid rgba(74,111,165,0.45)"
+                          : "1px solid transparent",
                         textDecoration: "none",
-                        transition: "background-color 150ms, color 150ms",
+                        transform: hovered ? "translateX(2px)" : "translateX(0)",
+                        transition: "all 240ms cubic-bezier(0.22, 1, 0.36, 1)",
                         overflow: "hidden",
                       }}
                     >
@@ -212,7 +237,8 @@ export function Sidebar() {
                             width: 3,
                             height: 20,
                             borderRadius: 2,
-                            backgroundColor: "#34D399",
+                            backgroundColor: "var(--accent-green)",
+                            boxShadow: "0 0 8px rgba(74,124,89,0.7)",
                           }}
                         />
                       )}
@@ -230,15 +256,16 @@ export function Sidebar() {
       </nav>
 
       {/* Bottom section */}
-      <div style={{ padding: "16px 16px 20px" }}>
+      <div style={{ padding: "16px 16px 20px", position: "relative", zIndex: 1 }}>
         {/* Wallet card */}
         <div
           style={{
-            backgroundColor: "#1A1A1A",
+            background:
+              "linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)",
             borderRadius: 12,
             padding: "12px 16px",
             marginBottom: 16,
-            border: "1px solid rgba(255,255,255,0.05)",
+            border: "1px solid rgba(255,255,255,0.12)",
           }}
         >
           <div
@@ -249,7 +276,14 @@ export function Sidebar() {
               marginBottom: 6,
             }}
           >
-            <span style={{ fontSize: 12, fontWeight: 500, color: "#6B6B6B", letterSpacing: "0.02em" }}>
+            <span
+              style={{
+                fontSize: 12,
+                fontWeight: 500,
+                color: "rgba(245,240,232,0.56)",
+                letterSpacing: "0.02em",
+              }}
+            >
               Wallet
             </span>
             <span
@@ -258,17 +292,17 @@ export function Sidebar() {
                 width: 6,
                 height: 6,
                 borderRadius: "50%",
-                backgroundColor: balance !== null ? "#34D399" : "#525252",
-                boxShadow: balance !== null ? "0 0 6px rgba(52,211,153,0.4)" : "none",
+                backgroundColor: balance !== null ? "var(--accent-green)" : "rgba(245,240,232,0.24)",
+                boxShadow: balance !== null ? "0 0 8px rgba(74,124,89,0.5)" : "none",
                 transition: "background-color 150ms, box-shadow 150ms",
               }}
             />
           </div>
-          <div style={{ fontSize: 18, fontWeight: 600, color: "#FFFFFF", letterSpacing: "-0.01em" }}>
+          <div style={{ fontSize: 18, fontWeight: 600, color: "var(--text-on-dark)", letterSpacing: "-0.01em" }}>
             {balance !== null ? `$${balance}` : "—"}
           </div>
           {balance !== null && (
-            <div style={{ fontSize: 11, color: "#525252", marginTop: 2 }}>USDC</div>
+            <div style={{ fontSize: 11, color: "rgba(245,240,232,0.54)", marginTop: 2 }}>USDC</div>
           )}
         </div>
 
@@ -276,7 +310,7 @@ export function Sidebar() {
         <div
           style={{
             fontSize: 11,
-            color: "#3D3D3D",
+            color: "rgba(245,240,232,0.36)",
             textAlign: "center",
             letterSpacing: "0.02em",
           }}
@@ -287,3 +321,4 @@ export function Sidebar() {
     </aside>
   );
 }
+
